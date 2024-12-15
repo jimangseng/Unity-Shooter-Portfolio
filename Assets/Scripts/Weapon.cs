@@ -17,27 +17,35 @@ public class Weapon: MonoBehaviour
     // 투사체 관련
     public GameObject basicObj;
     public GameObject cannonObj;
-    ProjectileBase basic;
-    ProjectileBase cannon;
+
+    Projectile basic;
+    Cannon cannon;
 
     // 궤적 관련
-    const int lineSegments = 2;
+    const int lineSegments = 10;
     public LineRenderer lineRenderer;
+
+    Trace trace = new Trace();
+
 
     private void Start()
     {
-        basic = new BasicProjectile(basicObj);
-        cannon = new CannonProjectile(cannonObj);
+        basic = new Projectile(basicObj);
+        cannon = new Cannon(cannonObj, trace);
     }
 
     private void Update()
     {
+        trace.update();
         cannon.update();
     }
 
     // 궤적 미리보기
     public void previewTrace(Vector3 _from, Vector3 _to)
     {
+        //trace.setTrace(_from, _to);
+        trace.calculate();
+
         lineRenderer.positionCount = lineSegments;
         lineRenderer.enabled = true;
 
@@ -45,7 +53,8 @@ public class Weapon: MonoBehaviour
 
         for (int i = 0; i < lineSegments; i++)
         {
-            //tPositions[i] = cannon.trace.Position; // todo: 미리보기 표출되도록
+
+            tPositions[i] = _from + trace.GetPositionByTime(i * 0.2f);
         }
 
         lineRenderer.SetPositions(tPositions);
@@ -61,7 +70,9 @@ public class Weapon: MonoBehaviour
 
         else if (_attackMode == AttackMode.Cannon)
         {
-            cannon.fire(_from, _to);
+            trace.time = 0.0f;
+            trace.setTrace(_from, _to);
+            cannon.fire(trace, _from);
         }
     }
 

@@ -1,28 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Unity.IO.LowLevel.Unsafe;
-using UnityEditor.Recorder.Input;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
-
-public class BasicProjectile : ProjectileBase
+public class Projectile
 {
-    public BasicProjectile(GameObject _projObj) : base(_projObj)
-    {
+    public GameObject projObject;
+    protected GameObject projInstance;
 
+    protected Vector3 forceDirection;
+
+    public Projectile(GameObject _basicObj)
+    {
+        projObject = _basicObj;
     }
 
-    public override void fire(Vector3 _from, Vector3 _to)
+    public virtual void fire(Vector3 _from, Vector3 _to)
     {
-        base.fire(_from, _to);
+        projInstance = MonoBehaviour.Instantiate(projObject, _from, Quaternion.Euler(projObject.transform.forward));
+        projInstance.SetActive(true);
+
+        forceDirection = Vector3.Normalize(_to - _from);
 
         projInstance.GetComponent<Rigidbody>().AddForce(forceDirection * 10.0f, ForceMode.Impulse);
     }
 
-    // 충돌 시
-    // TODO: ProjectileBase 클래스로 옮길 것
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.layer != LayerMask.NameToLayer("Obstacle"))
@@ -44,4 +47,6 @@ public class BasicProjectile : ProjectileBase
         projInstance.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
         //explosion.Play();
     }
+
+
 }

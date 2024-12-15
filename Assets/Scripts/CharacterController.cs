@@ -43,7 +43,7 @@ public class CharacterController : MonoBehaviour
     void Start()
     {
         anim = player.GetComponent<Animator>();
-        weapon = GetComponent<Weapon>();
+        weapon = player.GetComponent<Weapon>();
     }
 
     // Update is called once per frame
@@ -164,19 +164,20 @@ public class CharacterController : MonoBehaviour
 
         if (attackMode == AttackMode.Cannon)
         {
-            // 미리보기
-             weapon.previewTrace(firePosition, targetPosition);
 
-            if (Input.GetKey("q"))
-            {
-                // 발사각 상승
-                Debug.Log("발사각 상승");
-            }
-            else if (Input.GetKey("e"))
-            {
-                // 발사각 하강
-                Debug.Log("발사각 하강");
-            }
+            //미리보기
+            weapon.previewTrace(firePosition, targetPosition);
+
+            //if (Input.GetKey("q"))
+            //{
+            //    // 발사각 상승
+            //    Debug.Log("발사각 상승");
+            //}
+            //else if (Input.GetKey("e"))
+            //{
+            //    // 발사각 하강
+            //    Debug.Log("발사각 하강");
+            //}
 
         }
 

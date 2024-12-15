@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &275647220
 Transform:
   m_ObjectHideFlags: 0
@@ -146,7 +146,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 275647219}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -172,7 +172,6 @@ GameObject:
   - component: {fileID: 289470472}
   - component: {fileID: 289470475}
   - component: {fileID: 289470474}
-  - component: {fileID: 289470473}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -196,21 +195,6 @@ Transform:
   - {fileID: 1526988568}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &289470473
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289470471}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b73b24c2ff4595409b981c1fb7c5aa8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  basicObj: {fileID: 426927218}
-  cannonObj: {fileID: 1089041247}
-  lineRenderer: {fileID: 1526988569}
 --- !u!114 &289470474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,7 +226,7 @@ MonoBehaviour:
   player: {fileID: 1999500841}
   moveCursor: {fileID: 1739814620}
   targetCursor: {fileID: 1032285350}
-  weapon: {fileID: 289470473}
+  weapon: {fileID: 1999500845}
 --- !u!1 &426927218 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6118894152621464781, guid: 4d440999d3528f74591b83d891d5d5c1,
@@ -1099,11 +1083,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1873582855310200033, guid: cb52a9cc104924044a071c09413e3311,
+    - target: {fileID: 1101022621239148799, guid: cb52a9cc104924044a071c09413e3311,
         type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
+      propertyPath: basicObj
+      value: 
+      objectReference: {fileID: 426927218}
+    - target: {fileID: 1101022621239148799, guid: cb52a9cc104924044a071c09413e3311,
+        type: 3}
+      propertyPath: cannonObj
+      value: 
+      objectReference: {fileID: 1089041247}
+    - target: {fileID: 1101022621239148799, guid: cb52a9cc104924044a071c09413e3311,
+        type: 3}
+      propertyPath: lineRenderer
+      value: 
+      objectReference: {fileID: 1526988569}
     - target: {fileID: 6009722106853820602, guid: cb52a9cc104924044a071c09413e3311,
         type: 3}
       propertyPath: m_Name
@@ -1159,68 +1153,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: basic
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: cannon
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: Cannonball
-      value: 
-      objectReference: {fileID: 1089041247}
-    - target: {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: cannonball
-      value: 
-      objectReference: {fileID: 1089041247}
-    - target: {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: projectile
-      value: 
-      objectReference: {fileID: 426927218}
-    - target: {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: basicObject
-      value: 
-      objectReference: {fileID: 426927218}
-    - target: {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: cannonObject
-      value: 
-      objectReference: {fileID: 1089041247}
-    - target: {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: lineRenderer
-      value: 
-      objectReference: {fileID: 1526988569}
-    - target: {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: targetCursor
-      value: 
-      objectReference: {fileID: 1032285350}
-    - target: {fileID: 8231973896552604614, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: m_SpotAngle
-      value: 122.84033
-      objectReference: {fileID: 0}
-    - target: {fileID: 8231973896552604614, guid: cb52a9cc104924044a071c09413e3311,
-        type: 3}
-      propertyPath: m_InnerSpotAngle
-      value: 89.71358
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 7320433555444202273, guid: cb52a9cc104924044a071c09413e3311, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1231,6 +1164,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1982600303}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1999500845 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1101022621239148799, guid: cb52a9cc104924044a071c09413e3311,
+    type: 3}
+  m_PrefabInstance: {fileID: 1982600303}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1999500841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b73b24c2ff4595409b981c1fb7c5aa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &2046893114 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6437064031295858420, guid: 07a53b2ab53c92040ac8251cd6f03873,
@@ -1490,6 +1435,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cannonball
       objectReference: {fileID: 0}
+    - target: {fileID: 6118894152621464781, guid: 829bad171b6c8104b93ce1d8dec901ac,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8473409485339171919, guid: 829bad171b6c8104b93ce1d8dec901ac,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1558,6 +1508,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Projectile
+      objectReference: {fileID: 0}
+    - target: {fileID: 6118894152621464781, guid: 4d440999d3528f74591b83d891d5d5c1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8473409485339171919, guid: 4d440999d3528f74591b83d891d5d5c1,
         type: 3}
