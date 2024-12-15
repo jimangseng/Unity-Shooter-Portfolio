@@ -18,11 +18,11 @@ GameObject:
   - component: {fileID: 8284280453654538589}
   m_Layer: 2
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5344409631014670162
 Transform:
   m_ObjectHideFlags: 0
@@ -5103,10 +5103,30 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1475388484154612723, guid: 1848b752ffbdffb4bbf84edc24bcfbab,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.339
+      objectReference: {fileID: 0}
+    - target: {fileID: 1475388484154612723, guid: 1848b752ffbdffb4bbf84edc24bcfbab,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4938346066256152198, guid: 1848b752ffbdffb4bbf84edc24bcfbab,
         type: 3}
       propertyPath: m_Name
       value: MonsterHPBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938346066256152198, guid: 1848b752ffbdffb4bbf84edc24bcfbab,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6386249416871438566, guid: 1848b752ffbdffb4bbf84edc24bcfbab,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
