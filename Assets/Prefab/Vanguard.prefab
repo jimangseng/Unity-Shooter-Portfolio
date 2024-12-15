@@ -47,8 +47,8 @@ Light:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 30.97
   m_Range: 13.87
-  m_SpotAngle: 105.8704
-  m_InnerSpotAngle: 72.743645
+  m_SpotAngle: 122.84033
+  m_InnerSpotAngle: 89.71358
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -118,6 +118,95 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1001 &993167629916699806
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6353737702128865792}
+    m_Modifications:
+    - target: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1475388484154612723, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4704967254572883539, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 6.61
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938346066256152198, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_Name
+      value: PlayerHPBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 5744468218576983944, guid: 3920b631704467045bb0994003773722,
+        type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 4
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3920b631704467045bb0994003773722, type: 3}
+--- !u!4 &253505294436263972 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1030428257118590138, guid: 3920b631704467045bb0994003773722,
+    type: 3}
+  m_PrefabInstance: {fileID: 993167629916699806}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6892684169597990379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -368,7 +457,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 43c3db3bc23a1fa48bf64887c641167d,
         type: 3}
       propertyPath: m_Name
-      value: Vanguard By T. Choonyung
+      value: Vanguard
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 43c3db3bc23a1fa48bf64887c641167d,
         type: 3}
@@ -532,6 +621,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 8945353436867102062}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 43c3db3bc23a1fa48bf64887c641167d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 253505294436263972}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43c3db3bc23a1fa48bf64887c641167d,
         type: 3}
@@ -639,8 +732,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b35e77a9b0e87eb46891982103994522, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectile: {fileID: 0}
   targetCursor: {fileID: 0}
+  lineRenderer: {fileID: 0}
+  basic: {fileID: 0}
+  cannon: {fileID: 0}
 --- !u!4 &6353737702128865792 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 43c3db3bc23a1fa48bf64887c641167d,
