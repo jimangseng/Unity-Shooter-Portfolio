@@ -79,7 +79,7 @@ public class LevelManager
 
         public Tile GetTile(int _x, int _y)
         {
-            //ÇØ´ç À§Ä¡¿¡ Å¸ÀÏÀÌ ÀÖ´ÂÁö °Ë»ç
+            //í•´ë‹¹ ìœ„ì¹˜ì— íƒ€ì¼ì´ ìˆëŠ”ì§€ ê²€ì‚¬
             Tile tTileFound = list.Find(t => (t.x == _x) && (t.y == _y));
 
             if (tTileFound == null)
@@ -155,12 +155,12 @@ public class LevelManager
     Rect playerRect;
     Rect mapRect;
 
-    float perlinSeed = Random.Range(100.0f, 1000.0f); // ¹üÀ§´Â ¾î¶»°Ô Á¤ÇØ¾ßÇÏ³ª?
+    float perlinSeed = Random.Range(100.0f, 1000.0f); // ë²”ìœ„ëŠ” ì–´ë–»ê²Œ ì •í•´ì•¼í•˜ë‚˜?
 
     /// Methodes
     public LevelManager(GameObject _player, LevelData _levelData)
     {
-        // ÇÁ·ÎÆÛÆ¼ ÃÊ±âÈ­
+        // í”„ë¡œí¼í‹° ì´ˆê¸°í™”
         playerObject = _player;
         tileObject = _levelData.tileObject;
         obstacleObject = _levelData.obstacleObject;
@@ -176,20 +176,20 @@ public class LevelManager
     {
         while (true)
         {
-            // ¿µ¿ªµéÀ» ¾÷µ¥ÀÌÆ®
+            // ì˜ì—­ë“¤ì„ ì—…ë°ì´íŠ¸
             UpdatePlayerRect(playerObject.transform.position);
             UpdateMapRect();
 
-            // Å¸ÀÏ ¸®½ºÆ® ¾÷µ¥ÀÌÆ®
+            // íƒ€ì¼ ë¦¬ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
             AddToTileList();
 
-            // Å¸ÀÏÀÌ mapRect ¹Ù±ù¿¡ ÀÖÀ¸¸é ¸®½ºÆ®¿¡¼­ Á¦°Å
+            // íƒ€ì¼ì´ mapRect ë°”ê¹¥ì— ìˆìœ¼ë©´ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì œê±°
             tiles.RemoveIf(t => t.x < mapRect.minX || t.x > mapRect.maxX || t.y < mapRect.minY || t.y > mapRect.maxY);
 
-            // ¸ÓÆ¼¸®¾ó Àû¿ë
+            // ë¨¸í‹°ë¦¬ì–¼ ì ìš©
             tiles.ApplyMaterials(materials);
 
-            // ±×¸®±â
+            // ê·¸ë¦¬ê¸°
             tiles.Show();
 
             //Debug.Log(tileList.Count);
@@ -200,7 +200,7 @@ public class LevelManager
         }
     }
 
-    IEnumerator CreateObstacles()
+    public IEnumerator CreateObstacles()
     {
         while (true)
         {
@@ -243,25 +243,25 @@ public class LevelManager
 
     void UpdateMapRect()
     {
-        // ¿ìÃøÀ¸·Î ÀÌµ¿
+        // ìš°ì¸¡ìœ¼ë¡œ ì´ë™
         if (playerRect.maxX > mapRect.maxX)
         {
             mapRect.minX = Mathf.Max(playerRect.minX, mapRect.minX);
             mapRect.maxX = Mathf.Max(playerRect.maxX, mapRect.maxX);
         }
-        // ÁÂÃøÀ¸·Î ÀÌµ¿
+        // ì¢Œì¸¡ìœ¼ë¡œ ì´ë™
         else if (playerRect.minX < mapRect.minX)
         {
             mapRect.minX = Mathf.Min(playerRect.minX, mapRect.minX);
             mapRect.maxX = Mathf.Min(playerRect.maxX, mapRect.maxX);
         }
-        // »ó´ÜÀ¸·Î ÀÌµ¿
+        // ìƒë‹¨ìœ¼ë¡œ ì´ë™
         if (playerRect.maxY > mapRect.maxY)
         {
             mapRect.minY = Mathf.Max(playerRect.minY, mapRect.minY);
             mapRect.maxY = Mathf.Max(playerRect.maxY, mapRect.maxY);
         }
-        // ÇÏ´ÜÀ¸·Î ÀÌµ¿
+        // í•˜ë‹¨ìœ¼ë¡œ ì´ë™
         else if (playerRect.minY < mapRect.minY)
         {
             mapRect.minY = Mathf.Min(playerRect.minY, mapRect.minY);
@@ -274,7 +274,7 @@ public class LevelManager
     void AddToTileList()
     {
 
-        // player RectÀ» ¼øÈ¸
+        // player Rectì„ ìˆœíšŒ
         for (int i = Mathf.FloorToInt(playerRect.minY); i < Mathf.CeilToInt(playerRect.maxY); i++)
         {
             for (int j = Mathf.FloorToInt(playerRect.minX); j < Mathf.CeilToInt(playerRect.maxX); j++)
