@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8945353436867102062
 Transform:
   m_ObjectHideFlags: 0
@@ -47,8 +47,8 @@ Light:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 30.97
   m_Range: 13.87
-  m_SpotAngle: 105.8704
-  m_InnerSpotAngle: 72.743645
+  m_SpotAngle: 122.84033
+  m_InnerSpotAngle: 89.71358
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -368,7 +368,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 43c3db3bc23a1fa48bf64887c641167d,
         type: 3}
       propertyPath: m_Name
-      value: Vanguard By T. Choonyung
+      value: Vanguard
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 43c3db3bc23a1fa48bf64887c641167d,
         type: 3}
@@ -548,7 +548,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43c3db3bc23a1fa48bf64887c641167d,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7320433555444202273}
+      addedObject: {fileID: 1101022621239148799}
   m_SourcePrefab: {fileID: 100100000, guid: 43c3db3bc23a1fa48bf64887c641167d, type: 3}
 --- !u!1 &6009722106853820602 stripped
 GameObject:
@@ -627,7 +627,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &7320433555444202273
+--- !u!114 &1101022621239148799
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -636,11 +636,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6009722106853820602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b35e77a9b0e87eb46891982103994522, type: 3}
+  m_Script: {fileID: 11500000, guid: 5b73b24c2ff4595409b981c1fb7c5aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectile: {fileID: 0}
-  targetCursor: {fileID: 0}
+  basicObj: {fileID: 0}
+  cannonObj: {fileID: 0}
+  lineRenderer: {fileID: 0}
 --- !u!4 &6353737702128865792 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 43c3db3bc23a1fa48bf64887c641167d,

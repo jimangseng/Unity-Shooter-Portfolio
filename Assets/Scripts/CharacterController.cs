@@ -29,24 +29,21 @@ public class CharacterController : MonoBehaviour
     // Components
     Animator anim;
 
-    // Move ∞¸∑√
+    // Move Í¥ÄÎ†®
     Vector3 playerDestination = Vector3.zero;
     Vector3 targetDirection = Vector3.zero;
 
-    // Status ∞¸∑√
+    // Status Í¥ÄÎ†®
     Status mode = Status.Stopped;
     Status prevMode = Status.Stopped;
     AttackMode attackMode = AttackMode.Basic;
 
-    Weapon weapon;
+    public Weapon weapon;
 
-    // Start is called before the first frame update
     void Start()
     {
         anim = player.GetComponent<Animator>();
-
         weapon = player.GetComponent<Weapon>();
-
     }
 
     // Update is called once per frame
@@ -167,19 +164,20 @@ public class CharacterController : MonoBehaviour
 
         if (attackMode == AttackMode.Cannon)
         {
-            // πÃ∏Æ∫∏±‚
-             weapon.PreviewCannonballTrace();
 
-            if (Input.GetKey("q"))
-            {
-                // πﬂªÁ∞¢ ªÛΩ¬
-                Debug.Log("πﬂªÁ∞¢ ªÛΩ¬");
-            }
-            else if (Input.GetKey("e"))
-            {
-                // πﬂªÁ∞¢ «œ∞≠
-                Debug.Log("πﬂªÁ∞¢ «œ∞≠");
-            }
+            //ÎØ∏Î¶¨Î≥¥Í∏∞
+            weapon.previewTrace(firePosition, targetPosition);
+
+            //if (Input.GetKey("q"))
+            //{
+            //    // Î∞úÏÇ¨Í∞Å ÏÉÅÏäπ
+            //    Debug.Log("Î∞úÏÇ¨Í∞Å ÏÉÅÏäπ");
+            //}
+            //else if (Input.GetKey("e"))
+            //{
+            //    // Î∞úÏÇ¨Í∞Å ÌïòÍ∞ï
+            //    Debug.Log("Î∞úÏÇ¨Í∞Å ÌïòÍ∞ï");
+            //}
 
         }
 
@@ -189,7 +187,12 @@ public class CharacterController : MonoBehaviour
 
     void Fire()
     {
-       player.GetComponent<Weapon>().Fire(attackMode);
+        Vector3 tFrom = player.transform.position;
+        tFrom.y += 1.5f;
+
+        Vector3 tTo = targetCursor.transform.position;
+
+        weapon.fire(attackMode, tFrom, tTo);
     }
 
 
