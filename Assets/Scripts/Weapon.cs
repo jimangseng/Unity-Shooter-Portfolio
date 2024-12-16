@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
-using static Weapon;
 
-public class Weapon : MonoBehaviour
+public class Weapon: MonoBehaviour
 {
     public enum AttackMode
     {
@@ -15,53 +14,66 @@ public class Weapon : MonoBehaviour
         Cannon
     }
 
-    // ±À¿˚ ∞¸∑√
+    // Ìà¨ÏÇ¨Ï≤¥ Í¥ÄÎ†®
+    public GameObject basicObj;
+    public GameObject cannonObj;
+
+    Projectile basic;
+    Cannon cannon;
+
+    // Í∂§Ï†Å Í¥ÄÎ†®
     const int lineSegments = 10;
-
-    public GameObject targetCursor;
-
     public LineRenderer lineRenderer;
 
-    // ???
-    public BasicProjectile basic;
-    public CannonProjectile cannon;
-    //public ProjectileBase basic;
-    //public ProjectileBase cannon;
+    Trace trace = new Trace();
 
-    // Start is called before the first frame update
-    void Start()
+
+    private void Start()
     {
-        lineRenderer.positionCount = lineSegments;
+        basic = new Projectile(basicObj);
+        cannon = new Cannon(cannonObj, trace);
     }
 
-    public void PreviewCannonballTrace()
+    private void Update()
     {
+        trace.update();
+        cannon.update();
+    }
+
+    // Í∂§Ï†Å ÎØ∏Î¶¨Î≥¥Í∏∞
+    public void previewTrace(Vector3 _from, Vector3 _to)
+    {
+        //trace.setTrace(_from, _to);
+        trace.calculate();
+
+        lineRenderer.positionCount = lineSegments;
         lineRenderer.enabled = true;
 
         Vector3[] tPositions = new Vector3[lineSegments];
-        
+
         for (int i = 0; i < lineSegments; i++)
         {
-            tPositions[i] = cannon.trace.currentPosition;
+
+            tPositions[i] = _from + trace.GetPositionByTime(i * 0.2f);
         }
 
         lineRenderer.SetPositions(tPositions);
     }
 
-    public void Fire(AttackMode _attackMode)
+
+    public void fire(AttackMode _attackMode, Vector3 _from, Vector3 _to)
     {
-        Vector3 tFireFrom = gameObject.transform.position;
-        tFireFrom.y += 1.5f;
-
-        Vector3 tFIreTo = targetCursor.transform.position;
-
-        if(_attackMode == AttackMode.Basic)
+        if (_attackMode == AttackMode.Basic)
         {
-            basic.Fire(tFireFrom, tFIreTo);
+            basic.fire(_from, _to);
         }
-        else if(_attackMode == AttackMode.Cannon)
+
+        else if (_attackMode == AttackMode.Cannon)
         {
-            cannon.Fire(tFireFrom, tFIreTo);
+            trace.time = 0.0f;
+            trace.setTrace(_from, _to);
+            cannon.fire(trace, _from);
         }
     }
+
 }
