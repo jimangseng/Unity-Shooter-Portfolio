@@ -142,6 +142,7 @@ public class CharacterController : MonoBehaviour
     void QuitAim()
     {
         targetCursor.SetActive(false);
+        weapon.lineRenderer.enabled = false;
 
         SwitchMode(Status.Stopped);
     }

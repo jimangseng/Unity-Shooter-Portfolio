@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(levelManager.UpdateLevel());
 
         // start to spawn enemies
-        //StartCoroutine(SpawnEnemies());
+        StartCoroutine(SpawnEnemies());
     }
 
     // Update is called once per frame
