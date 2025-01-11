@@ -561,7 +561,7 @@ AudioSource:
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
-  Mute: 0
+  Mute: 1
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
@@ -902,7 +902,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: 7973ad7d2f1f22240ba46f4c8caf2cee, type: 2}
   m_BuildHeightMesh: 0
 --- !u!114 &882057780
 MonoBehaviour:
@@ -921,6 +921,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 5650e97f3e158564da9c240c6fd27f66, type: 2}
   - {fileID: 2100000, guid: 0fd5d3506c589934fb79d1f609d00d5c, type: 2}
   - {fileID: 2100000, guid: 1e9ed52539c68c84c98f7f231100c8d3, type: 2}
+  - {fileID: 2100000, guid: 1cb2cdae0f3dae348a1613a86f54c720, type: 2}
   - {fileID: 2100000, guid: 1cb2cdae0f3dae348a1613a86f54c720, type: 2}
 --- !u!65 &882057781
 BoxCollider:
@@ -3189,6 +3190,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tile
+      objectReference: {fileID: 0}
+    - target: {fileID: 7446834986410300904, guid: 07a53b2ab53c92040ac8251cd6f03873,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
