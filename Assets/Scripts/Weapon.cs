@@ -22,7 +22,7 @@ public class Weapon: MonoBehaviour
     Cannon cannon;
 
     // 궤적 관련
-    const int lineSegments = 10;
+    const int lineSegments = 20;
     public LineRenderer lineRenderer;
 
     Trace trace = new Trace();
@@ -43,21 +43,20 @@ public class Weapon: MonoBehaviour
     // 궤적 미리보기
     public void previewTrace(Vector3 _from, Vector3 _to)
     {
-        //trace.setTrace(_from, _to);
+        trace.setTrace(_from, _to);
         trace.calculate();
 
         lineRenderer.positionCount = lineSegments;
-        lineRenderer.enabled = true;
 
         Vector3[] tPositions = new Vector3[lineSegments];
 
-        for (int i = 0; i < lineSegments; i++)
+        for (int i = 0; i < lineSegments; ++i)
         {
-
-            tPositions[i] = _from + trace.GetPositionByTime(i * 0.2f);
+            tPositions[i] = _from + trace.GetPositionByTime(i * 0.05f);
         }
 
         lineRenderer.SetPositions(tPositions);
+        lineRenderer.enabled = true;
     }
 
 

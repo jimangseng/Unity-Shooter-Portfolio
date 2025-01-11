@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
 
     LevelManager levelManager;
 
-    // Start is called before the first frame update
+    // Start is called before the first frame updatez`
     void Start()
     {
         // initialize enemy list
@@ -62,11 +62,15 @@ public class GameManager : MonoBehaviour
 
         levelManager = new LevelManager(player, new LevelData(tileObject, obstacleObject, materials, navMeshSurface));
 
+        // build the first navmesh
+        levelManager.BuildNavMeshData();
+
         // update level
         StartCoroutine(levelManager.UpdateLevel());
+        StartCoroutine(levelManager.UpdateNavMeshData());
 
         // start to spawn enemies
-        //StartCoroutine(SpawnEnemies());
+        StartCoroutine(SpawnEnemies());
     }
 
     // Update is called once per frame
@@ -93,6 +97,8 @@ public class GameManager : MonoBehaviour
                     player.transform.position.z + Random.Range(1.0f, 5.0f));
                 enemyInstance = Instantiate(enemy, enemyPosition, rotation);
 
+
+
                 // set enemy
                 enemyInstance.SetActive(true);
                 enemyInstance.transform.GetChild(0).gameObject.SetActive(false);
@@ -105,6 +111,26 @@ public class GameManager : MonoBehaviour
 
             for (int i = 0; i < enemies.Count; i++)
             {
+                // 맵 크기에 접근 가능해야 함.
+                Vector3 enemyPosition = enemies[i].transform.position;
+                Rect mapRect = levelManager.mapRect;
+                if (enemyPosition.x > mapRect.maxX)
+                {
+                    enemyPosition.x -= enemyPosition.x - mapRect.maxX;
+                }
+                else if (enemyPosition.x < mapRect.minX)
+                {
+                    enemyPosition.x += mapRect.maxX - enemyPosition.x;
+                }
+                else if (enemyPosition.y > mapRect.maxY)
+                {
+                    enemyPosition.y -= enemyPosition.y - mapRect.maxY;
+                }
+                else
+                {
+                    enemyPosition.y += mapRect.maxY - enemyPosition.y;
+                }
+
                 if (enemies[i].activeInHierarchy)
                 {
                     // start to move

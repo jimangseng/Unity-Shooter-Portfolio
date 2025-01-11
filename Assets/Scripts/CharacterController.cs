@@ -49,6 +49,11 @@ public class CharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        ProcessInput();
+    }
+
+    void ProcessInput()
+    {
         if (Input.GetMouseButtonDown(1))    // RMB
         {
             playerDestination = GetRaycastHitpoint();
@@ -112,9 +117,6 @@ public class CharacterController : MonoBehaviour
 
     }
 
-    ///
-    ///
-
     void Stop()
     {
         anim.SetBool("isRunning", false);
@@ -142,6 +144,7 @@ public class CharacterController : MonoBehaviour
     void QuitAim()
     {
         targetCursor.SetActive(false);
+        weapon.lineRenderer.enabled = false;
 
         SwitchMode(Status.Stopped);
     }
