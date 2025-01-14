@@ -4,20 +4,12 @@ using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
 
-public class LevelData
+public class Level : MonoBehaviour
 {
-    public GameObject tileObject;
-    public GameObject obstacleObject;
-    public Material[] mats;
-    public NavMeshSurface surface;
-
-    public LevelData(GameObject _tileObject, GameObject _obstaclceObject, Material[] _mats, NavMeshSurface _surface)
-    {
-        tileObject = _tileObject;
-        obstacleObject = _obstaclceObject;
-        mats = _mats;
-        surface = _surface;
-    }
+    [field: SerializeField] public GameObject PlayerObject { get; set; }
+    [field: SerializeField] public GameObject TileObject { get; set; }
+    [field: SerializeField] public GameObject ObstacleObject { get; set; }
+    [field: SerializeField] public Material[] LevelMaterials { get; set; }
 }
 
 public class Tile
@@ -124,7 +116,9 @@ public class TileList
     {
         foreach (var t in list)
         {
+            //t.tile.transform.SetParent(t.tile.transform.parent);
             t.tile.SetActive(true);
         }
+
     }
 }

@@ -36,38 +36,28 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    // Manager Property
+    public LevelManager levelManager;
+
+    public Level level;
     public GameObject player;
     public GameObject enemy;
+    List<GameObject> enemies;
 
-    public GameObject levelObject;
-    GameObject tileObject;
-    GameObject obstacleObject;
 
-    public List<GameObject> enemies;
-
-    NavMeshSurface navMeshSurface;
-    Material[] materials;
-
-    LevelManager levelManager;
 
     // Start is called before the first frame updatez`
     void Start()
-    {
+    { 
+
         // initialize enemy list
         enemies = new List<GameObject>();
-        tileObject = levelObject.transform.GetChild(0).gameObject;
-        navMeshSurface = levelObject.GetComponent<NavMeshSurface>();
-        materials = levelObject.GetComponent<LevelScript>().mats;
 
-        levelManager = new LevelManager(player, new LevelData(tileObject, obstacleObject, materials, navMeshSurface));
-
-        // build the first navmesh
-        levelManager.BuildNavMeshData();
+        levelManager.SetLevel(level);
 
         // update level
         StartCoroutine(levelManager.UpdateLevel());
         StartCoroutine(levelManager.UpdateNavMeshData());
+
 
         // start to spawn enemies
         StartCoroutine(SpawnEnemies());

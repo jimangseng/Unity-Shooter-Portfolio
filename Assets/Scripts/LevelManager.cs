@@ -10,18 +10,14 @@ using System;
 using UnityEditor;
 using UnityEngine.AI;
 using Unity.VisualScripting;
+using static Cinemachine.DocumentationSortingAttribute;
 
-public class LevelManager
+public class LevelManager : MonoBehaviour
 {
-    /// Properties
-    // external
-    GameObject playerObject;
-    GameObject tileObject;
-    GameObject obstacleObject;
-    Material[] materials;
-    NavMeshSurface navMeshSurface;
+    Level level;
 
-    // internal
+    /// Properties
+
     TileList tiles = new TileList();
 
     float range = 20.0f;
@@ -30,29 +26,32 @@ public class LevelManager
     public Rect playerRect;
     public Rect mapRect;
 
-    float perlinSeed = Random.Range(100.0f, 1000.0f); // 범위는 어떻게 정해야하나?
+    float perlinSeed;
 
     /// Methodes
-    public LevelManager(GameObject _player, LevelData _levelData)
-    {
-        // 프로퍼티 초기화
-        playerObject = _player;
-        tileObject = _levelData.tileObject;
-        obstacleObject = _levelData.obstacleObject;
-        materials = _levelData.mats;
-        navMeshSurface = _levelData.surface;
 
+    private void Start()
+    {
+
+        // Rect 관련
         playerRect = new Rect(-range, range, -range, range);
         mapRect = new Rect(-range, range, -range, range);
+
+        // 
+        perlinSeed = Random.Range(100.0f, 1000.0f); // 범위는 어떻게 정해야하나?
     }
 
+    public void SetLevel(Level _level)
+    {
+        level = _level;
+    }
 
     public IEnumerator UpdateLevel()
     {
         while (true)
         {
             // 영역들을 업데이트
-            UpdatePlayerRect(playerObject.transform.position);
+            UpdatePlayerRect(level.PlayerObject.transform.position);
             UpdateMapRect();
 
             // 타일 리스트 업데이트
@@ -62,26 +61,27 @@ public class LevelManager
             tiles.RemoveIf(t => t.x < mapRect.minX || t.x > mapRect.maxX || t.y < mapRect.minY || t.y > mapRect.maxY);
 
             // 머티리얼 적용
-            tiles.ApplyMaterials(materials);
+            tiles.ApplyMaterials(level.LevelMaterials);
+
+            foreach (var t in tiles.GetList())
+            {
+                t.tile.transform.SetParent(level.gameObject.transform);
+            }
 
             // 그리기
             tiles.Show();
 
-            //Debug.Log(tileList.Count);
             yield return new WaitForSeconds(updateTime);
         }
     }
 
-    public void BuildNavMeshData()
-    {
-        navMeshSurface.BuildNavMesh();
-    }
-
     public IEnumerator UpdateNavMeshData()
     {
-        while(true)
+        level.GetComponent<NavMeshSurface>().BuildNavMesh();
+
+        while (true)
         {
-            navMeshSurface.UpdateNavMesh(navMeshSurface.navMeshData);
+            level.GetComponent<NavMeshSurface>().UpdateNavMesh(level.GetComponent<NavMeshSurface>().navMeshData);
             yield return new WaitForSeconds(updateTime);
         }
     }
@@ -139,7 +139,7 @@ public class LevelManager
 
                 if (tTile == null)
                 {
-                    GameObject tObject = Object.Instantiate(tileObject, new Vector3(j, 0, i), tileObject.transform.rotation);
+                    GameObject tObject = Object.Instantiate(level.TileObject, new Vector3(j, 0, i), level.TileObject.transform.rotation);
                     tTile = new Tile(j, i, tObject);
 
                     float perlinValue = Mathf.PerlinNoise(tTile.tile.transform.position.x * 0.1f + perlinSeed, tTile.tile.transform.position.z * 0.1f + perlinSeed); 

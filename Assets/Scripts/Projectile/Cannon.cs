@@ -4,46 +4,81 @@ using System.Diagnostics;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Cannon
+public class Cannon : ProjectileBase
 {
-    public GameObject projObject;
-    public GameObject projInstance;
-
-    Trace trace;
+    Trace trace = null;
 
     public Vector3 position = Vector3.zero;
-
     Vector3 playerPosition = Vector3.zero;
 
-    public Cannon(GameObject _projObject, Trace _trace)
+    // 궤적 관련
+    const int lineSegments = 20;
+    public LineRenderer lineRenderer;
+
+
+    protected void Start()
     {
-        projObject = _projObject;
-        trace = _trace;
+        UnityEngine.Debug.Log("Cannon Start()");
+
+        trace = new Trace();
+
+        trace.time = 0.0f;
+
+
+        trace.setTrace(from, to);
+        trace.calculate();
+
+        playerPosition = from;
+
+        gameObject.SetActive(true);
+
     }
 
-    public void update()
+    public void Update()
     {
         position = trace.Position + playerPosition;
 
-        if (projInstance != null)
+        if (gameObject != null)
         {
 
-            projInstance.transform.position = position;
+            gameObject.transform.position = position;
         }
     }
 
-    public void fire(Trace _trace, Vector3 _from)
+    private void OnCollisionEnter(Collision collision)
     {
-        trace = _trace;
+        
+    }
 
-        playerPosition = _from;
+    // 궤적 미리보기
+    public void previewTrace(Vector3 _from, Vector3 _to)
+    {
+        //미리보기
 
-        projInstance = MonoBehaviour.Instantiate(projObject, _from, Quaternion.Euler(projObject.transform.forward));
-        projInstance.SetActive(true);
+        //if (Input.GetKey("q"))
+        //{
+        //    // 발사각 상승
+        //    Debug.Log("발사각 상승");
+        //}
+        //else if (Input.GetKey("e"))
+        //{
+        //    // 발사각 하강
+        //    Debug.Log("발사각 하강");
+        //}
 
+
+        lineRenderer.positionCount = lineSegments;
+
+        Vector3[] tPositions = new Vector3[lineSegments];
+
+        for (int i = 0; i < lineSegments; ++i)
+        {
+            tPositions[i] = _from + trace.GetPositionByTime(i * 0.05f);
+        }
+
+        lineRenderer.SetPositions(tPositions);
+        lineRenderer.enabled = true;
     }
 
 
-
-           
 }
