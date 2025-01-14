@@ -35,10 +35,11 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
     #endregion
-
+    [Header("Level")]
     public LevelManager levelManager;
-
     public Level level;
+
+    [Header("Player & Enemy")]
     public GameObject player;
     public GameObject enemy;
     List<GameObject> enemies;

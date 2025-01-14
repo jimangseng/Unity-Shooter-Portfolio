@@ -1,16 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using NavMeshBuilder = UnityEngine.AI.NavMeshBuilder;
 using NavMeshSurface = Unity.AI.Navigation.NavMeshSurface;
 using Random = UnityEngine.Random;
 using Object = UnityEngine.Object;
-
 using System;
 using UnityEditor;
-using UnityEngine.AI;
 using Unity.VisualScripting;
 using static Cinemachine.DocumentationSortingAttribute;
+using UnityEditor.AI;
+using UnityEngine.AI;
+using System.Diagnostics;
+using System.Linq;
 
 public class LevelManager : MonoBehaviour
 {
@@ -21,7 +23,7 @@ public class LevelManager : MonoBehaviour
     TileList tiles = new TileList();
 
     float range = 20.0f;
-    float updateTime = 0.1f;
+    float updateTime = 0.5f;
 
     public Rect playerRect;
     public Rect mapRect;
@@ -32,7 +34,6 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-
         // Rect 관련
         playerRect = new Rect(-range, range, -range, range);
         mapRect = new Rect(-range, range, -range, range);
@@ -48,6 +49,8 @@ public class LevelManager : MonoBehaviour
 
     public IEnumerator UpdateLevel()
     {
+        Bounds totalBounds;
+
         while (true)
         {
             // 영역들을 업데이트
@@ -63,10 +66,11 @@ public class LevelManager : MonoBehaviour
             // 머티리얼 적용
             tiles.ApplyMaterials(level.LevelMaterials);
 
-            foreach (var t in tiles.GetList())
-            {
-                t.tile.transform.SetParent(level.gameObject.transform);
-            }
+            // AABB 콜라이더 업데이트
+            tiles.UpdateAABBCollider(level.gameObject);
+
+            // 부모 지정
+            tiles.SetParent(level.gameObject);
 
             // 그리기
             tiles.Show();
@@ -77,11 +81,26 @@ public class LevelManager : MonoBehaviour
 
     public IEnumerator UpdateNavMeshData()
     {
-        level.GetComponent<NavMeshSurface>().BuildNavMesh();
+        NavMeshSurface surface = level.GetComponent<NavMeshSurface>();
+        BoxCollider collider = level.GetComponent<BoxCollider>();
+
+        List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
+
+        NavMeshBuildSettings settings = surface.GetBuildSettings();
+
+        NavMeshData data = NavMeshBuilder.BuildNavMeshData(settings, sources, collider.bounds, Vector3.zero, Quaternion.identity);
 
         while (true)
         {
-            level.GetComponent<NavMeshSurface>().UpdateNavMesh(level.GetComponent<NavMeshSurface>().navMeshData);
+            sources.Clear();
+            NavMeshBuildSource source = new NavMeshBuildSource();
+            source.transform = level.transform.localToWorldMatrix;
+            source.shape = NavMeshBuildSourceShape.Box;
+            source.size = collider.bounds.size;
+            sources.Add(source);
+
+            NavMeshBuilder.UpdateNavMeshData(data, settings, sources, collider.bounds);
+
             yield return new WaitForSeconds(updateTime);
         }
     }
@@ -142,7 +161,7 @@ public class LevelManager : MonoBehaviour
                     GameObject tObject = Object.Instantiate(level.TileObject, new Vector3(j, 0, i), level.TileObject.transform.rotation);
                     tTile = new Tile(j, i, tObject);
 
-                    float perlinValue = Mathf.PerlinNoise(tTile.tile.transform.position.x * 0.1f + perlinSeed, tTile.tile.transform.position.z * 0.1f + perlinSeed); 
+                    float perlinValue = Mathf.PerlinNoise(tTile.tile.transform.position.x * 0.1f + perlinSeed, tTile.tile.transform.position.z * 0.1f + perlinSeed);
                     tTile.perlinValue = Mathf.Clamp01(perlinValue);
 
                     tiles.Add(tTile);
