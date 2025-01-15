@@ -53,12 +53,12 @@ public class GameManager : MonoBehaviour
         // initialize enemy list
         enemies = new List<GameObject>();
 
+        // designate level to level manager
         levelManager.SetLevel(level);
 
         // update level
         StartCoroutine(levelManager.UpdateLevel());
         StartCoroutine(levelManager.UpdateNavMeshData());
-
 
         // start to spawn enemies
         StartCoroutine(SpawnEnemies());
@@ -87,8 +87,6 @@ public class GameManager : MonoBehaviour
                     1.5f,
                     player.transform.position.z + Random.Range(1.0f, 5.0f));
                 enemyInstance = Instantiate(enemy, enemyPosition, rotation);
-
-
 
                 // set enemy
                 enemyInstance.SetActive(true);

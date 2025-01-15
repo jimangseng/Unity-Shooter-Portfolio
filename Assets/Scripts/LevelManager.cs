@@ -14,6 +14,7 @@ using UnityEngine.AI;
 using System.Diagnostics;
 using System.Linq;
 
+
 public class LevelManager : MonoBehaviour
 {
     Level level;
@@ -49,8 +50,6 @@ public class LevelManager : MonoBehaviour
 
     public IEnumerator UpdateLevel()
     {
-        Bounds totalBounds;
-
         while (true)
         {
             // 영역들을 업데이트
@@ -81,25 +80,35 @@ public class LevelManager : MonoBehaviour
 
     public IEnumerator UpdateNavMeshData()
     {
-        NavMeshSurface surface = level.GetComponent<NavMeshSurface>();
         BoxCollider collider = level.GetComponent<BoxCollider>();
 
+        NavMeshBuildSettings settings = new NavMeshBuildSettings();
+
+        Matrix4x4 matrix = new Matrix4x4();
         List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
+        NavMeshBuildSource source = new NavMeshBuildSource();
 
-        NavMeshBuildSettings settings = surface.GetBuildSettings();
+        NavMeshData data = new NavMeshData();
+        NavMeshDataInstance instance = new NavMeshDataInstance();
 
-        NavMeshData data = NavMeshBuilder.BuildNavMeshData(settings, sources, collider.bounds, Vector3.zero, Quaternion.identity);
+        settings = level.GetComponent<NavMeshSurface>().GetBuildSettings();
 
         while (true)
         {
+            NavMesh.RemoveNavMeshData(instance);
+
+            matrix = Matrix4x4.identity;
+            matrix = Matrix4x4.Translate(collider.bounds.center);
+
             sources.Clear();
-            NavMeshBuildSource source = new NavMeshBuildSource();
-            source.transform = level.transform.localToWorldMatrix;
+            source.transform = matrix;
             source.shape = NavMeshBuildSourceShape.Box;
             source.size = collider.bounds.size;
+            source.component = collider;
             sources.Add(source);
 
-            NavMeshBuilder.UpdateNavMeshData(data, settings, sources, collider.bounds);
+            data = NavMeshBuilder.BuildNavMeshData(settings, sources, collider.bounds, Vector3.zero, Quaternion.identity);
+            instance = NavMesh.AddNavMeshData(data);
 
             yield return new WaitForSeconds(updateTime);
         }
