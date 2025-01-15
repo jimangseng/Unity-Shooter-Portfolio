@@ -20,24 +20,6 @@ public class Enemy : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        //if (collision.gameObject.layer == LayerMask.NameToLayer("Projectile"))
-        //{
-        //    gameObject.SetActive(false);
-        //}
 
-
-        //// prevent object from colliding(?)
-        //collision.gameObject.GetComponent<BoxCollider>().enabled = false;
-
-        ////// clear missile particle system
-        //collision.gameObject.transform.GetChild(0).gameObject.GetComponent<ParticleSystem>().Clear(false);
-
-        ////// stop smoke particle system
-        ////particlesystem smoke = projinstance.transform.getchild(0).getchild(0).gameobject.getcomponent<particlesystem>();
-        ////smoke.stop();
-
-        ////// play explosion particle system
-        //collision.gameObject.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
-        ////explosion.play();
     }
 }

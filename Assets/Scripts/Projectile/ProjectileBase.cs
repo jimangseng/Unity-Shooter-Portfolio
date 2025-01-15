@@ -11,18 +11,13 @@ public class ProjectileBase: MonoBehaviour
     // Start is called before the first frame update
     protected void Start()
     {
-        Debug.Log("Base Start()");
+        //Debug.Log("Base Start()");
     }
 
     // Update is called once per frame
     void Update()
     {
         
-    }
-
-    protected void OnCollisionEnter(Collision collision)
-    {
-       
     }
 
     public void SetFromAndTo(Vector3 _from, Vector3 _to)

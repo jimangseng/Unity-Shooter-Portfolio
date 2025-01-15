@@ -19,7 +19,30 @@ public class BasicProjectile : ProjectileBase
 
     private void OnCollisionEnter(Collision collision)
     {
-        
+        GameObject collidee = collision.gameObject;
+        GameObject collider = gameObject;
+
+        if(collidee.tag == "Enemy")
+        {
+            collidee.SetActive(false);
+            GameManager.Instance.enemies.Remove(collidee);
+            Destroy(collidee);
+            
+            collider.SetActive(false);
+            Destroy(collider);
+        }
+
+        ///// particle system
+        //// clear missile particle system
+        //gameObject.transform.GetChild(0).gameObject.GetComponent<ParticleSystem>().Clear(false);
+
+        //// stop smoke particle system
+        //ParticleSystem smoke = gameObject.transform.GetChild(0).GetChild(0).gameObject.GetComponent<ParticleSystem>();
+        //smoke.Stop();
+
+        //// play explosion particle system
+        //gameObject.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
+        ////explosion.play();
     }
 
 

@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
     [Header("Player & Enemy")]
     public GameObject player;
     public GameObject enemy;
-    List<GameObject> enemies;
+    public List<GameObject> enemies;
 
 
 
