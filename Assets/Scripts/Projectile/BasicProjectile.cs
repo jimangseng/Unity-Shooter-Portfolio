@@ -32,6 +32,12 @@ public class BasicProjectile : ProjectileBase
             Destroy(collider);
         }
 
+        if(collidee.tag == "Player")
+        {
+            collider.SetActive(false);
+            Destroy(collider);
+        }
+
         ///// particle system
         //// clear missile particle system
         //gameObject.transform.GetChild(0).gameObject.GetComponent<ParticleSystem>().Clear(false);

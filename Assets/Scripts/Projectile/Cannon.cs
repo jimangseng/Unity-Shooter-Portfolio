@@ -36,18 +36,28 @@ public class Cannon : ProjectileBase
 
     public void Update()
     {
-        position = trace.Position + playerPosition;
+        trace.update();
 
         if (gameObject != null)
         {
-
+            position = trace.Position + playerPosition;
             gameObject.transform.position = position;
         }
+
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        
+        GameObject collidee = collision.gameObject;
+        GameObject collider = gameObject;
+
+        if(collidee.tag == "Enemy")
+        {
+            collidee.SetActive(false);
+            GameManager.Instance.enemies.Remove(collidee);
+            Destroy(collidee);
+        }
+
     }
 
     // 궤적 미리보기
