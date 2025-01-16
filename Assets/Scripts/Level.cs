@@ -34,6 +34,8 @@ public class Tile
     public float y;
     public GameObject tile;
     public float perlinValue;
+
+    public bool updated;
 }
 
 public class Rect
@@ -142,11 +144,13 @@ public class TileList
         foreach (var t in list)
         {
             totalBounds.Encapsulate(t.tile.GetComponent<MeshRenderer>().bounds);
-            UnityEngine.Object.Destroy(t.tile.GetComponent<BoxCollider>());
+            //UnityEngine.Object.Destroy(t.tile.GetComponent<BoxCollider>());
         }
 
         _level.GetComponent<BoxCollider>().center = totalBounds.center;
         _level.GetComponent<BoxCollider>().size = totalBounds.size;
+
+        //_level.GetComponent<BoxCollider>().enabled = false;
     }
 
 

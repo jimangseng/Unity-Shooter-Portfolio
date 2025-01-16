@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
 
         // update level
         StartCoroutine(levelManager.UpdateLevel());
-        StartCoroutine(levelManager.UpdateNavMeshData());
+        //StartCoroutine(levelManager.UpdateNavMeshData());
 
         // start to spawn enemies
         StartCoroutine(SpawnEnemies());
@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviour
 
                 Vector3 enemyPosition = new Vector3(
                     player.transform.position.x + Random.Range(1.0f, 5.0f),
-                    1.5f,
+                    2.5f,
                     player.transform.position.z + Random.Range(1.0f, 5.0f));
                 enemyInstance = Instantiate(enemy, enemyPosition, rotation);
 
@@ -131,7 +131,7 @@ public class GameManager : MonoBehaviour
                     // start to move
                     enemies[i].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = true;
                     // set navmesh agent destination
-                    enemies[i].GetComponent<UnityEngine.AI.NavMeshAgent>().SetDestination(player.transform.position);
+                    enemies[i].GetComponent<UnityEngine.AI.NavMeshAgent>().SetDestination(Vector3Int.RoundToInt( player.transform.position));
                     // activate  trail particle system
                     enemies[i].transform.GetChild(0).gameObject.SetActive(true);
                 }

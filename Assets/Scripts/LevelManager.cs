@@ -31,6 +31,8 @@ public class LevelManager : MonoBehaviour
 
     float perlinSeed;
 
+    NavMeshDataInstance navMeshDataInstance;
+
     /// Methodes
 
     private void Start()
@@ -38,9 +40,15 @@ public class LevelManager : MonoBehaviour
         // Rect 관련
         playerRect = new Rect(-range, range, -range, range);
         mapRect = new Rect(-range, range, -range, range);
+        
+        navMeshDataInstance = new NavMeshDataInstance();
 
-        // 
         perlinSeed = Random.Range(100.0f, 1000.0f); // 범위는 어떻게 정해야하나?
+    }
+
+    private void Update()
+    {
+        
     }
 
     public void SetLevel(Level _level)
@@ -62,11 +70,20 @@ public class LevelManager : MonoBehaviour
             // 타일이 mapRect 바깥에 있으면 리스트에서 제거
             tiles.RemoveIf(t => t.x < mapRect.minX || t.x > mapRect.maxX || t.y < mapRect.minY || t.y > mapRect.maxY);
 
+            /// 매 업데이트마다 중복 적용되고 있다. 최적화 필요
+
+
+
             // 머티리얼 적용
             tiles.ApplyMaterials(level.LevelMaterials);
 
+            // 높이 추가
+            AddObstacle(tiles);
+
             // AABB 콜라이더 업데이트
             tiles.UpdateAABBCollider(level.gameObject);
+
+            UpdateNavMeshData();
 
             // 부모 지정
             tiles.SetParent(level.gameObject);
@@ -78,41 +95,66 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    public IEnumerator UpdateNavMeshData()
+    public void AddObstacle(TileList _tiles)
     {
+        List<Tile> list = _tiles.GetList();
+
+        foreach (var t in list)
+        {
+            int tIndex = Mathf.FloorToInt(t.perlinValue * (3.0f));
+
+            if (tIndex > 1 && !t.updated)
+            {
+                Vector3 tPosition = new Vector3(0.0f, 1.0f, 0.0f);
+                Transform tTransform = t.tile.transform;
+                tTransform.Translate(tPosition);
+
+                t.tile.layer = LayerMask.NameToLayer("Obstacle");
+
+                t.updated = true;
+            }
+        }
+    }
+
+    public void UpdateNavMeshData()
+    {
+        NavMesh.RemoveNavMeshData(navMeshDataInstance);
+
         BoxCollider collider = level.GetComponent<BoxCollider>();
 
         NavMeshBuildSettings settings = new NavMeshBuildSettings();
 
         Matrix4x4 matrix = new Matrix4x4();
+
         List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
-        NavMeshBuildSource source = new NavMeshBuildSource();
+        NavMeshBuildSource source;
 
         NavMeshData data = new NavMeshData();
-        NavMeshDataInstance instance = new NavMeshDataInstance();
 
         settings = level.GetComponent<NavMeshSurface>().GetBuildSettings();
 
-        while (true)
+        foreach (var t in tiles.GetList())
         {
-            NavMesh.RemoveNavMeshData(instance);
+            if (t.tile.layer != LayerMask.NameToLayer("Level"))
+            {
+                continue;
+            }
 
-            matrix = Matrix4x4.identity;
-            matrix = Matrix4x4.Translate(collider.bounds.center);
+            source = new NavMeshBuildSource();
 
-            sources.Clear();
-            source.transform = matrix;
+            source.transform = t.tile.transform.localToWorldMatrix;
             source.shape = NavMeshBuildSourceShape.Box;
-            source.size = collider.bounds.size;
-            source.component = collider;
+            source.size = t.tile.GetComponent<BoxCollider>().size;
             sources.Add(source);
-
-            data = NavMeshBuilder.BuildNavMeshData(settings, sources, collider.bounds, Vector3.zero, Quaternion.identity);
-            instance = NavMesh.AddNavMeshData(data);
-
-            yield return new WaitForSeconds(updateTime);
         }
+
+        data = NavMeshBuilder.BuildNavMeshData(settings, sources, collider.bounds, Vector3.zero, Quaternion.identity);
+        navMeshDataInstance = NavMesh.AddNavMeshData(data);
+
     }
+
+
+
 
 
     /////////////////////////////////////////////////////////////////////////
