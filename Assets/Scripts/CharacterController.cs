@@ -87,8 +87,6 @@ public class CharacterController : MonoBehaviour
             SwitchAttackMode(AttackMode.Basic);
         }
 
-        GameManager.Instance.playerMode = mode;
-
         switch (mode)
         {
             case Status.Moving:

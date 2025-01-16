@@ -9,7 +9,9 @@ public class BasicProjectile : ProjectileBase
     protected Vector3 forceDirection;
 
     protected void Start()
-    { 
+    {
+        damage = 5;
+
         forceDirection = Vector3.Normalize(to - from);
 
         gameObject.SetActive(true);
@@ -23,10 +25,6 @@ public class BasicProjectile : ProjectileBase
 
         if(collidee.tag == "Enemy")
         {
-            collidee.SetActive(false);
-            GameManager.Instance.enemies.Remove(collidee);
-            Destroy(collidee);
-            
             collider.SetActive(false);
             Destroy(collider);
         }

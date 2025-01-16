@@ -15,6 +15,8 @@ public class Cannon : ProjectileBase
 
     protected void Start()
     {
+        damage = 15;
+
         this.trace = new Trace(CharacterController.trace);
 
         trace.Reset();
@@ -44,9 +46,8 @@ public class Cannon : ProjectileBase
 
         if(collidee.tag == "Enemy")
         {
-            collidee.SetActive(false);
-            GameManager.Instance.enemies.Remove(collidee);
-            Destroy(collidee);
+            collider.SetActive(false);
+            Destroy(collider);
         }
 
     }
