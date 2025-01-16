@@ -9,6 +9,11 @@ public class Projectiles : MonoBehaviour
     public GameObject[] projectiles;
     protected GameObject projInstance;
 
+    private void Update()
+    {
+        
+    }
+
     public void Instantiate(Vector3 _from, Vector3 _to, AttackMode _mode)
     {
         switch(_mode)

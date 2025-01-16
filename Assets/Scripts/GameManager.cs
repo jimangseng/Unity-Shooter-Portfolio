@@ -1,3 +1,4 @@
+using Enums;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,7 +45,7 @@ public class GameManager : MonoBehaviour
     public GameObject enemy;
     public List<GameObject> enemies;
 
-
+    public Status playerMode = Status.Stopped;
 
     // Start is called before the first frame updatez`
     void Start()

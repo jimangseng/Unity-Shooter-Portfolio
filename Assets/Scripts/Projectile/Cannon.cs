@@ -6,27 +6,18 @@ using UnityEngine;
 
 public class Cannon : ProjectileBase
 {
-    Trace trace = null;
+
+    Trace trace;
 
     public Vector3 position = Vector3.zero;
     Vector3 playerPosition = Vector3.zero;
 
-    // 궤적 관련
-    const int lineSegments = 20;
-    public LineRenderer lineRenderer;
-
 
     protected void Start()
     {
-        UnityEngine.Debug.Log("Cannon Start()");
+        this.trace = new Trace(CharacterController.trace);
 
-        trace = new Trace();
-
-        trace.time = 0.0f;
-
-
-        trace.setTrace(from, to);
-        trace.calculate();
+        trace.Reset();
 
         playerPosition = from;
 
@@ -60,35 +51,12 @@ public class Cannon : ProjectileBase
 
     }
 
-    // 궤적 미리보기
-    public void previewTrace(Vector3 _from, Vector3 _to)
+    private void OnDestroy()
     {
-        //미리보기
 
-        //if (Input.GetKey("q"))
-        //{
-        //    // 발사각 상승
-        //    Debug.Log("발사각 상승");
-        //}
-        //else if (Input.GetKey("e"))
-        //{
-        //    // 발사각 하강
-        //    Debug.Log("발사각 하강");
-        //}
-
-
-        lineRenderer.positionCount = lineSegments;
-
-        Vector3[] tPositions = new Vector3[lineSegments];
-
-        for (int i = 0; i < lineSegments; ++i)
-        {
-            tPositions[i] = _from + trace.GetPositionByTime(i * 0.05f);
-        }
-
-        lineRenderer.SetPositions(tPositions);
-        lineRenderer.enabled = true;
     }
+
+
 
 
 }

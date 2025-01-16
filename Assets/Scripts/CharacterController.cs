@@ -18,6 +18,11 @@ public class CharacterController : MonoBehaviour
     public GameObject targetCursor;
     public GameObject projectileManager;
 
+    public LineRenderer lineRenderer;
+    const int lineSegments = 20;
+
+    public static Trace trace = new Trace();
+
     // Components
     Animator anim;
     Projectiles projectiles;
@@ -36,6 +41,8 @@ public class CharacterController : MonoBehaviour
     {
         anim = player.GetComponent<Animator>();
         projectiles = projectileManager.GetComponent<Projectiles>();
+
+        lineRenderer = GameObject.Find("LineRenderer").GetComponent<LineRenderer>();
     }
 
     // Update is called once per frame
@@ -79,6 +86,8 @@ public class CharacterController : MonoBehaviour
             SwitchMode(Status.Aiming);
             SwitchAttackMode(AttackMode.Basic);
         }
+
+        GameManager.Instance.playerMode = mode;
 
         switch (mode)
         {
@@ -135,15 +144,16 @@ public class CharacterController : MonoBehaviour
 
     void QuitAim()
     {
+        // trace.Reset(); // 왜?
+
         targetCursor.SetActive(false);
-        //weapon.lineRenderer.enabled = false;
+        lineRenderer.enabled = false;
 
         SwitchMode(Status.Stopped);
     }
 
     void Aim()
     {
-
         Vector3 targetPosition = GetRaycastHitpoint();
         targetPosition.y = 0.55f;
 
@@ -156,6 +166,15 @@ public class CharacterController : MonoBehaviour
         // position to fire the projectile
         Vector3 firePosition = Vector3.MoveTowards(player.transform.position, targetCursor.transform.position, 0.5f);
         firePosition.y += 1.5f;
+
+        if(attackMode == AttackMode.Cannon)
+        {
+            // 미리보기
+            trace.setTrace(firePosition, targetPosition);
+            trace.calculate();
+            previewTrace(trace);
+        }
+
 
         SwitchMode(Status.Aiming);
 
@@ -194,5 +213,33 @@ public class CharacterController : MonoBehaviour
     void SwitchAttackMode(AttackMode modeChangeTo)
     {
         attackMode = modeChangeTo;
+    }
+
+
+    // 궤적 미리보기
+    public void previewTrace(Trace _trace)
+    {
+        //if (Input.GetKey("q"))
+        //{
+        //    // 발사각 상승
+        //    Debug.Log("발사각 상승");
+        //}
+        //else if (Input.GetKey("e"))
+        //{
+        //    // 발사각 하강
+        //    Debug.Log("발사각 하강");
+        //}
+
+        lineRenderer.positionCount = lineSegments;
+
+        Vector3[] tPositions = new Vector3[lineSegments];
+
+        for (int i = 0; i < lineSegments; ++i)
+        {
+            tPositions[i] = _trace.from + trace.GetPositionByTime(i * 0.05f);
+        }
+
+        lineRenderer.SetPositions(tPositions);
+        lineRenderer.enabled = true;
     }
 }

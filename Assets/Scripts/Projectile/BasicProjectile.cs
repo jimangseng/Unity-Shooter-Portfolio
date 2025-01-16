@@ -10,7 +10,6 @@ public class BasicProjectile : ProjectileBase
 
     protected void Start()
     { 
-        UnityEngine.Debug.Log("Basic Start()");
         forceDirection = Vector3.Normalize(to - from);
 
         gameObject.SetActive(true);
@@ -32,10 +31,9 @@ public class BasicProjectile : ProjectileBase
             Destroy(collider);
         }
 
-        if(collidee.tag == "Player")
+        if(collidee.tag == "Player" || collidee.layer == LayerMask.NameToLayer("UI"))
         {
-            collider.SetActive(false);
-            Destroy(collider);
+            Physics.IgnoreCollision(collider.GetComponent<Collider>(), collidee.GetComponent<Collider>(), true);
         }
 
         ///// particle system
