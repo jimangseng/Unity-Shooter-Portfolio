@@ -9744,14 +9744,14 @@ GameObject:
   - component: {fileID: 8473409485339171919}
   - component: {fileID: 7752024203149742267}
   - component: {fileID: 2300790433275414627}
-  - component: {fileID: 6319431645895081046}
+  - component: {fileID: 5285182655667304574}
   m_Layer: 8
-  m_Name: Projectile
+  m_Name: BasicProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8473409485339171919
 Transform:
   m_ObjectHideFlags: 0
@@ -9816,7 +9816,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
---- !u!114 &6319431645895081046
+--- !u!114 &5285182655667304574
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9825,11 +9825,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6118894152621464781}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38f5c52d2f8ea3349b9ad4b21600a134, type: 3}
+  m_Script: {fileID: 11500000, guid: a32f6d2ddab4e7541b424d0845920007, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projObject: {fileID: 6118894152621464781}
-  projInstance: {fileID: 0}
 --- !u!1 &8369445382521885911
 GameObject:
   m_ObjectHideFlags: 0
@@ -9848,7 +9846,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &621077122227523303
 Transform:
   m_ObjectHideFlags: 0

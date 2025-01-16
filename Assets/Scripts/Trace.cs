@@ -1,8 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
-using static Weapon;
 
 public class Trace
 {
@@ -10,8 +10,8 @@ public class Trace
     public float time;
 
     // 궤적의 시작점과 끝점
-    Vector3 from;
-    Vector3 to;
+    public Vector3 from;
+    public Vector3 to;
 
     // 궤적을 이루는 각각의 힘
     Force horizontal;
@@ -22,13 +22,36 @@ public class Trace
     public Vector3 Position;
     public Vector3 Velocity;
 
-    public Trace()
+    // 기본 생성자
+    public Trace ()
     {
         time = 0.0f;
 
+        from = Vector3.zero;
+        to = Vector3.zero;
+        
         horizontal = new Force();
         vertical = new Force();
         gravity = new Force();
+
+        Position = Vector3.zero;
+        Velocity = Vector3.zero;
+    }
+
+    // 복사 생성자
+    public Trace(Trace _previous)
+    {
+        time = _previous.time;
+
+        from = _previous.from;
+        to = _previous.to;
+
+        horizontal = new Force(_previous.horizontal);
+        vertical = new Force(_previous.vertical);
+        gravity = new Force(_previous.gravity);
+
+        Position = _previous.Position;
+        Velocity = _previous.Velocity;
     }
 
     public void setTrace(Vector3 _from, Vector3 _to)
@@ -75,5 +98,22 @@ public class Trace
         calculate();
 
         return Position;
+    }
+
+    public void Reset()
+    {
+        time = 0.0f;
+
+        from = Vector3.zero;
+        to = Vector3.zero;
+
+        //horizontal = new Force();
+        //vertical = new Force();
+        //gravity = new Force();
+
+        Position = Vector3.zero;
+        Velocity = Vector3.zero;
+
+
     }
 }

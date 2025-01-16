@@ -4,46 +4,59 @@ using System.Diagnostics;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Cannon
+public class Cannon : ProjectileBase
 {
-    public GameObject projObject;
-    public GameObject projInstance;
 
     Trace trace;
 
     public Vector3 position = Vector3.zero;
-
     Vector3 playerPosition = Vector3.zero;
 
-    public Cannon(GameObject _projObject, Trace _trace)
+
+    protected void Start()
     {
-        projObject = _projObject;
-        trace = _trace;
+        this.trace = new Trace(CharacterController.trace);
+
+        trace.Reset();
+
+        playerPosition = from;
+
+        gameObject.SetActive(true);
+
     }
 
-    public void update()
+    public void Update()
     {
-        position = trace.Position + playerPosition;
+        trace.update();
 
-        if (projInstance != null)
+        if (gameObject != null)
         {
-
-            projInstance.transform.position = position;
+            position = trace.Position + playerPosition;
+            gameObject.transform.position = position;
         }
+
     }
 
-    public void fire(Trace _trace, Vector3 _from)
+    private void OnCollisionEnter(Collision collision)
     {
-        trace = _trace;
+        GameObject collidee = collision.gameObject;
+        GameObject collider = gameObject;
 
-        playerPosition = _from;
+        if(collidee.tag == "Enemy")
+        {
+            collidee.SetActive(false);
+            GameManager.Instance.enemies.Remove(collidee);
+            Destroy(collidee);
+        }
 
-        projInstance = MonoBehaviour.Instantiate(projObject, _from, Quaternion.Euler(projObject.transform.forward));
-        projInstance.SetActive(true);
+    }
+
+    private void OnDestroy()
+    {
 
     }
 
 
 
-           
+
 }

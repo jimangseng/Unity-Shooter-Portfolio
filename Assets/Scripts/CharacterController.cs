@@ -7,27 +7,25 @@ using TMPro;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using static UnityEditor.Searcher.SearcherWindow.Alignment;
-using AttackMode = Weapon.AttackMode;
 using Debug = UnityEngine.Debug;
+using Enums;
 
 public class CharacterController : MonoBehaviour
 {
-    // Enums
-    enum Status
-    {
-        Stopped,
-        Moving,
-        Aiming,
-        Attacking
-    }
-
     // GameObjects
     public GameObject player;
     public GameObject moveCursor;
     public GameObject targetCursor;
-    
+    public GameObject projectileManager;
+
+    public LineRenderer lineRenderer;
+    const int lineSegments = 20;
+
+    public static Trace trace = new Trace();
+
     // Components
     Animator anim;
+    Projectiles projectiles;
 
     // Move 관련
     Vector3 playerDestination = Vector3.zero;
@@ -36,14 +34,15 @@ public class CharacterController : MonoBehaviour
     // Status 관련
     Status mode = Status.Stopped;
     Status prevMode = Status.Stopped;
-    AttackMode attackMode = AttackMode.Basic;
 
-    public Weapon weapon;
+    AttackMode attackMode = AttackMode.Basic;
 
     void Start()
     {
         anim = player.GetComponent<Animator>();
-        weapon = player.GetComponent<Weapon>();
+        projectiles = projectileManager.GetComponent<Projectiles>();
+
+        lineRenderer = GameObject.Find("LineRenderer").GetComponent<LineRenderer>();
     }
 
     // Update is called once per frame
@@ -72,21 +71,23 @@ public class CharacterController : MonoBehaviour
             if (mode == Status.Aiming)
             {
                 QuitAim();
-                Fire();
+                Fire(attackMode);
             }
-        }
-
-        if (Input.GetKeyDown("a"))
-        {
-            SwitchMode(Status.Aiming);
-            attackMode = AttackMode.Basic;
         }
 
         if (Input.GetKeyDown("1"))
         {
             SwitchMode(Status.Aiming);
-            attackMode = AttackMode.Cannon;
+            SwitchAttackMode(AttackMode.Cannon);
         }
+        
+        if (Input.GetKeyDown("a"))
+        {
+            SwitchMode(Status.Aiming);
+            SwitchAttackMode(AttackMode.Basic);
+        }
+
+        GameManager.Instance.playerMode = mode;
 
         switch (mode)
         {
@@ -143,15 +144,16 @@ public class CharacterController : MonoBehaviour
 
     void QuitAim()
     {
+        // trace.Reset(); // 왜?
+
         targetCursor.SetActive(false);
-        weapon.lineRenderer.enabled = false;
+        lineRenderer.enabled = false;
 
         SwitchMode(Status.Stopped);
     }
 
     void Aim()
     {
-
         Vector3 targetPosition = GetRaycastHitpoint();
         targetPosition.y = 0.55f;
 
@@ -165,37 +167,27 @@ public class CharacterController : MonoBehaviour
         Vector3 firePosition = Vector3.MoveTowards(player.transform.position, targetCursor.transform.position, 0.5f);
         firePosition.y += 1.5f;
 
-        if (attackMode == AttackMode.Cannon)
+        if(attackMode == AttackMode.Cannon)
         {
-
-            //미리보기
-            weapon.previewTrace(firePosition, targetPosition);
-
-            //if (Input.GetKey("q"))
-            //{
-            //    // 발사각 상승
-            //    Debug.Log("발사각 상승");
-            //}
-            //else if (Input.GetKey("e"))
-            //{
-            //    // 발사각 하강
-            //    Debug.Log("발사각 하강");
-            //}
-
+            // 미리보기
+            trace.setTrace(firePosition, targetPosition);
+            trace.calculate();
+            previewTrace(trace);
         }
+
 
         SwitchMode(Status.Aiming);
 
     }
 
-    void Fire()
+    void Fire(AttackMode _mode)
     {
         Vector3 tFrom = player.transform.position;
         tFrom.y += 1.5f;
 
         Vector3 tTo = targetCursor.transform.position;
 
-        weapon.fire(attackMode, tFrom, tTo);
+        projectiles.Instantiate(tFrom, tTo, _mode);
     }
 
 
@@ -216,5 +208,38 @@ public class CharacterController : MonoBehaviour
     {
         prevMode = mode;
         mode = modeChangeTo;
+    }
+
+    void SwitchAttackMode(AttackMode modeChangeTo)
+    {
+        attackMode = modeChangeTo;
+    }
+
+
+    // 궤적 미리보기
+    public void previewTrace(Trace _trace)
+    {
+        //if (Input.GetKey("q"))
+        //{
+        //    // 발사각 상승
+        //    Debug.Log("발사각 상승");
+        //}
+        //else if (Input.GetKey("e"))
+        //{
+        //    // 발사각 하강
+        //    Debug.Log("발사각 하강");
+        //}
+
+        lineRenderer.positionCount = lineSegments;
+
+        Vector3[] tPositions = new Vector3[lineSegments];
+
+        for (int i = 0; i < lineSegments; ++i)
+        {
+            tPositions[i] = _trace.from + trace.GetPositionByTime(i * 0.05f);
+        }
+
+        lineRenderer.SetPositions(tPositions);
+        lineRenderer.enabled = true;
     }
 }

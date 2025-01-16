@@ -1,23 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.AI.Navigation;
 using UnityEngine;
+using static Cinemachine.DocumentationSortingAttribute;
 
-public class LevelData
+public class Level : MonoBehaviour
 {
-    public GameObject tileObject;
-    public GameObject obstacleObject;
-    public Material[] mats;
-    public NavMeshSurface surface;
-
-    public LevelData(GameObject _tileObject, GameObject _obstaclceObject, Material[] _mats, NavMeshSurface _surface)
-    {
-        tileObject = _tileObject;
-        obstacleObject = _obstaclceObject;
-        mats = _mats;
-        surface = _surface;
-    }
+    [field: SerializeField] public GameObject PlayerObject { get; set; }
+    [field: SerializeField] public GameObject TileObject { get; set; }
+    [field: SerializeField] public GameObject ObstacleObject { get; set; }
+    [field: SerializeField] public Material[] LevelMaterials { get; set; }
 }
 
 public class Tile
@@ -124,7 +118,36 @@ public class TileList
     {
         foreach (var t in list)
         {
+            //t.tile.transform.SetParent(t.tile.transform.parent);
             t.tile.SetActive(true);
         }
+
     }
+
+    public void SetParent(GameObject _parent)
+    {
+        foreach(var t in list)
+        {
+            t.tile.transform.SetParent(_parent.transform);
+        }
+    }
+
+    public void UpdateAABBCollider(GameObject _level)
+    {
+        Bounds totalBounds;
+
+        Tile startingPoint = list.ElementAt(0);
+        totalBounds = startingPoint.tile.GetComponent<MeshRenderer>().bounds;
+
+        foreach (var t in list)
+        {
+            totalBounds.Encapsulate(t.tile.GetComponent<MeshRenderer>().bounds);
+            UnityEngine.Object.Destroy(t.tile.GetComponent<BoxCollider>());
+        }
+
+        _level.GetComponent<BoxCollider>().center = totalBounds.center;
+        _level.GetComponent<BoxCollider>().size = totalBounds.size;
+    }
+
+
 }

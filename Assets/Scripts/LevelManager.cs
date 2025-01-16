@@ -1,58 +1,59 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using NavMeshBuilder = UnityEngine.AI.NavMeshBuilder;
 using NavMeshSurface = Unity.AI.Navigation.NavMeshSurface;
 using Random = UnityEngine.Random;
 using Object = UnityEngine.Object;
-
 using System;
 using UnityEditor;
-using UnityEngine.AI;
 using Unity.VisualScripting;
+using static Cinemachine.DocumentationSortingAttribute;
+using UnityEditor.AI;
+using UnityEngine.AI;
+using System.Diagnostics;
+using System.Linq;
 
-public class LevelManager
+
+public class LevelManager : MonoBehaviour
 {
-    /// Properties
-    // external
-    GameObject playerObject;
-    GameObject tileObject;
-    GameObject obstacleObject;
-    Material[] materials;
-    NavMeshSurface navMeshSurface;
+    Level level;
 
-    // internal
+    /// Properties
+
     TileList tiles = new TileList();
 
     float range = 20.0f;
-    float updateTime = 0.1f;
+    float updateTime = 0.5f;
 
     public Rect playerRect;
     public Rect mapRect;
 
-    float perlinSeed = Random.Range(100.0f, 1000.0f); // 범위는 어떻게 정해야하나?
+    float perlinSeed;
 
     /// Methodes
-    public LevelManager(GameObject _player, LevelData _levelData)
-    {
-        // 프로퍼티 초기화
-        playerObject = _player;
-        tileObject = _levelData.tileObject;
-        obstacleObject = _levelData.obstacleObject;
-        materials = _levelData.mats;
-        navMeshSurface = _levelData.surface;
 
+    private void Start()
+    {
+        // Rect 관련
         playerRect = new Rect(-range, range, -range, range);
         mapRect = new Rect(-range, range, -range, range);
+
+        // 
+        perlinSeed = Random.Range(100.0f, 1000.0f); // 범위는 어떻게 정해야하나?
     }
 
+    public void SetLevel(Level _level)
+    {
+        level = _level;
+    }
 
     public IEnumerator UpdateLevel()
     {
         while (true)
         {
             // 영역들을 업데이트
-            UpdatePlayerRect(playerObject.transform.position);
+            UpdatePlayerRect(level.PlayerObject.transform.position);
             UpdateMapRect();
 
             // 타일 리스트 업데이트
@@ -62,26 +63,53 @@ public class LevelManager
             tiles.RemoveIf(t => t.x < mapRect.minX || t.x > mapRect.maxX || t.y < mapRect.minY || t.y > mapRect.maxY);
 
             // 머티리얼 적용
-            tiles.ApplyMaterials(materials);
+            tiles.ApplyMaterials(level.LevelMaterials);
+
+            // AABB 콜라이더 업데이트
+            tiles.UpdateAABBCollider(level.gameObject);
+
+            // 부모 지정
+            tiles.SetParent(level.gameObject);
 
             // 그리기
             tiles.Show();
 
-            //Debug.Log(tileList.Count);
             yield return new WaitForSeconds(updateTime);
         }
     }
 
-    public void BuildNavMeshData()
-    {
-        navMeshSurface.BuildNavMesh();
-    }
-
     public IEnumerator UpdateNavMeshData()
     {
-        while(true)
+        BoxCollider collider = level.GetComponent<BoxCollider>();
+
+        NavMeshBuildSettings settings = new NavMeshBuildSettings();
+
+        Matrix4x4 matrix = new Matrix4x4();
+        List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
+        NavMeshBuildSource source = new NavMeshBuildSource();
+
+        NavMeshData data = new NavMeshData();
+        NavMeshDataInstance instance = new NavMeshDataInstance();
+
+        settings = level.GetComponent<NavMeshSurface>().GetBuildSettings();
+
+        while (true)
         {
-            navMeshSurface.UpdateNavMesh(navMeshSurface.navMeshData);
+            NavMesh.RemoveNavMeshData(instance);
+
+            matrix = Matrix4x4.identity;
+            matrix = Matrix4x4.Translate(collider.bounds.center);
+
+            sources.Clear();
+            source.transform = matrix;
+            source.shape = NavMeshBuildSourceShape.Box;
+            source.size = collider.bounds.size;
+            source.component = collider;
+            sources.Add(source);
+
+            data = NavMeshBuilder.BuildNavMeshData(settings, sources, collider.bounds, Vector3.zero, Quaternion.identity);
+            instance = NavMesh.AddNavMeshData(data);
+
             yield return new WaitForSeconds(updateTime);
         }
     }
@@ -139,10 +167,10 @@ public class LevelManager
 
                 if (tTile == null)
                 {
-                    GameObject tObject = Object.Instantiate(tileObject, new Vector3(j, 0, i), tileObject.transform.rotation);
+                    GameObject tObject = Object.Instantiate(level.TileObject, new Vector3(j, 0, i), level.TileObject.transform.rotation);
                     tTile = new Tile(j, i, tObject);
 
-                    float perlinValue = Mathf.PerlinNoise(tTile.tile.transform.position.x * 0.1f + perlinSeed, tTile.tile.transform.position.z * 0.1f + perlinSeed); 
+                    float perlinValue = Mathf.PerlinNoise(tTile.tile.transform.position.x * 0.1f + perlinSeed, tTile.tile.transform.position.z * 0.1f + perlinSeed);
                     tTile.perlinValue = Mathf.Clamp01(perlinValue);
 
                     tiles.Add(tTile);

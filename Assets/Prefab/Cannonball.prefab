@@ -9746,14 +9746,14 @@ GameObject:
   - component: {fileID: 2300790433275414627}
   - component: {fileID: 840308525812731427}
   - component: {fileID: 5441358429147569003}
-  - component: {fileID: 5347635223712100429}
+  - component: {fileID: 4745356042530066457}
   m_Layer: 8
   m_Name: Cannonball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8473409485339171919
 Transform:
   m_ObjectHideFlags: 0
@@ -9868,7 +9868,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5347635223712100429
+--- !u!114 &4745356042530066457
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9877,11 +9877,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6118894152621464781}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7b96c29557e5aa448790a363fb86007, type: 3}
+  m_Script: {fileID: 11500000, guid: 7a824385fdbf201478c0154c1059bd3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projObject: {fileID: 0}
-  projInstance: {fileID: 0}
+  position: {x: 0, y: 0, z: 0}
+  lineRenderer: {fileID: 0}
 --- !u!1 &8369445382521885911
 GameObject:
   m_ObjectHideFlags: 0

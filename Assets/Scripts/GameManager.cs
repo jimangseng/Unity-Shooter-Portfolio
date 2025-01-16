@@ -1,3 +1,4 @@
+using Enums;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,35 +36,26 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
     #endregion
+    [Header("Level")]
+    public LevelManager levelManager;
+    public Level level;
 
-    // Manager Property
+    [Header("Player & Enemy")]
     public GameObject player;
     public GameObject enemy;
-
-    public GameObject levelObject;
-    GameObject tileObject;
-    GameObject obstacleObject;
-
     public List<GameObject> enemies;
 
-    NavMeshSurface navMeshSurface;
-    Material[] materials;
-
-    LevelManager levelManager;
+    public Status playerMode = Status.Stopped;
 
     // Start is called before the first frame updatez`
     void Start()
-    {
+    { 
+
         // initialize enemy list
         enemies = new List<GameObject>();
-        tileObject = levelObject.transform.GetChild(0).gameObject;
-        navMeshSurface = levelObject.GetComponent<NavMeshSurface>();
-        materials = levelObject.GetComponent<LevelScript>().mats;
 
-        levelManager = new LevelManager(player, new LevelData(tileObject, obstacleObject, materials, navMeshSurface));
-
-        // build the first navmesh
-        levelManager.BuildNavMeshData();
+        // designate level to level manager
+        levelManager.SetLevel(level);
 
         // update level
         StartCoroutine(levelManager.UpdateLevel());
@@ -96,8 +88,6 @@ public class GameManager : MonoBehaviour
                     1.5f,
                     player.transform.position.z + Random.Range(1.0f, 5.0f));
                 enemyInstance = Instantiate(enemy, enemyPosition, rotation);
-
-
 
                 // set enemy
                 enemyInstance.SetActive(true);
