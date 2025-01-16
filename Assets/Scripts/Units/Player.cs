@@ -3,22 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Player : UnitBase
+public class Player : UnitWithSlider
 {
-    public Slider slider;
-
-    void Damage(int _damage)
+    private void Start()
     {
-        currentHP -= _damage;
-
-        slider.value = (float)currentHP / (float)totalHP;
+        totalHP = 64;
+        currentHP = 64;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider.tag == "Enemy")
+        if (collision.collider.tag == "Enemy")
         {
-            Damage(5);
+            Damage(collision.collider.GetComponent<Enemy>().ap);
         }
     }
 }

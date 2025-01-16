@@ -8,6 +8,8 @@ public class ProjectileBase: MonoBehaviour
     protected Vector3 from = Vector3.zero;
     protected Vector3 to = Vector3.zero;
 
+    public int damage = 0;
+
     // Start is called before the first frame update
     protected void Start()
     {
