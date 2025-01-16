@@ -22,13 +22,32 @@ public class StageManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeUI.SetText(stage.remainedTime.ToString("F2"));
+        timeUI.SetText(stage.remainingTime.ToString("F2"));
         enemyUI.SetText("킬: " + GameManager.Instance.kills.ToString());
+
+        if(stage.remainingTime < 0.0f)
+        {
+
+            stopStage();
+        }
     }
 
     public void startStage()
     {
         stageUI.SetText("스테이지 " + currentStage);
-        StartCoroutine(stage.StartStage());
+
+        StartCoroutine(stage.updateStage());
+    }
+
+    public void stopStage()
+    {
+        currentStage++;
+
+        stageUI.SetText("스테이지 " + currentStage);
+
+        StopCoroutine(stage.updateStage());
+
+        stage.remainingTime = 10.0f;
+        stage.elapsedTime = 0.0f;
     }
 }

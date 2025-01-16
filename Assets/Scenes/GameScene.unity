@@ -2142,7 +2142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0a8b8a9245a74e44a5104afd9fe81a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  remainedTime: 0
+  remainingTime: 0
   elapsedTime: 0
 --- !u!4 &1577058105
 Transform:
