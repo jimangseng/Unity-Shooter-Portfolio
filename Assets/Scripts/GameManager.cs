@@ -45,11 +45,13 @@ public class GameManager : MonoBehaviour
     public GameObject enemy;
     public List<GameObject> enemies;
 
-    public Status playerMode = Status.Stopped;
+    public StageManager stageManager;
+
+    public int kills = 0;
 
     // Start is called before the first frame updatez`
     void Start()
-    { 
+    {
 
         // initialize enemy list
         enemies = new List<GameObject>();
@@ -63,6 +65,9 @@ public class GameManager : MonoBehaviour
 
         // start to spawn enemies
         StartCoroutine(SpawnEnemies());
+
+        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+        stageManager.startStage();
     }
 
     // Update is called once per frame

@@ -18,6 +18,7 @@ public class Enemy : UnitWithSlider
         if(currentHP < 0 )
         {
             gameObject.SetActive(false);
+            GameManager.Instance.kills++;
             GameManager.Instance.enemies.Remove(gameObject);
             Destroy(gameObject);
         }
