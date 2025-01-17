@@ -91,6 +91,8 @@ public class CharacterController : MonoBehaviour
         {
             case Status.Moving:
 
+                player.GetComponent<AudioSource>().mute = false;
+
                 // When player moved onto the point
                 if (Vector3.Distance(player.transform.position, playerDestination) < 0.05f)
                 {
@@ -105,6 +107,7 @@ public class CharacterController : MonoBehaviour
 
             case Status.Stopped:
 
+                player.GetComponent<AudioSource>().mute = true;
                 break;
 
             case Status.Aiming:
