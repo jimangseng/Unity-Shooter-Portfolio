@@ -52,7 +52,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame updatez`
     void Start()
     {
-
         // initialize enemy list
         enemies = new List<GameObject>();
 
@@ -61,7 +60,6 @@ public class GameManager : MonoBehaviour
 
         // update level
         StartCoroutine(levelManager.UpdateLevel());
-        //StartCoroutine(levelManager.UpdateNavMeshData());
 
         // start to spawn enemies
         StartCoroutine(SpawnEnemies());

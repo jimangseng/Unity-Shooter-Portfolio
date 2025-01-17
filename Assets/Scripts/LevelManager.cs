@@ -71,9 +71,6 @@ public class LevelManager : MonoBehaviour
             tiles.RemoveIf(t => t.x < mapRect.minX || t.x > mapRect.maxX || t.y < mapRect.minY || t.y > mapRect.maxY);
 
             /// 매 업데이트마다 중복 적용되고 있다. 최적화 필요
-
-
-
             // 머티리얼 적용
             tiles.ApplyMaterials(level.LevelMaterials);
 

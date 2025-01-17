@@ -201,6 +201,30 @@ AudioMixerGroupController:
   m_Mute: 0
   m_Solo: 0
   m_BypassEffects: 0
+--- !u!244 &-53993095697705947
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 499e02485f5b1f6488eda3ee1724a49b
+  m_EffectName: Echo
+  m_MixLevel: da3c52f7d5f6bd54282996ad02417bb0
+  m_Parameters:
+  - m_ParameterName: Delay
+    m_GUID: 4ceec752ee5d8474599d49acb5c2cd9f
+  - m_ParameterName: Decay
+    m_GUID: 765d9bab3956a1748a870f17c77a2647
+  - m_ParameterName: Max channels
+    m_GUID: 0222353ed39c0f04bb3bc1344daa474f
+  - m_ParameterName: Drymix
+    m_GUID: 0ea3c66690b2b6049997a6feb0b0cc16
+  - m_ParameterName: Wetmix
+    m_GUID: fc22649ee44807b459c85c8d5d6d82fe
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!241 &24100000
 AudioMixerController:
   m_ObjectHideFlags: 0
@@ -238,7 +262,7 @@ AudioMixerController:
     - d774cc01b8f060344955bd1ad4b52c6c
     - dd3457600c5d3184ebd1f0a2fb9fad8a
     name: Projectiles
-  m_CurrentViewIndex: 2
+  m_CurrentViewIndex: 1
   m_TargetSnapshot: {fileID: 24500006}
 --- !u!243 &24300002
 AudioMixerGroupController:
@@ -287,18 +311,22 @@ AudioMixerSnapshotController:
   m_FloatValues:
     957b1ae08bd4a7e43842a23d4cee3de6: -4.2868934
     03a524518f02e3b4686bf8ebf7e3c5fe: 53
-    1d22f0a159d18004d8b330bc81b325cb: 2.5
+    1d22f0a159d18004d8b330bc81b325cb: 2.05
+    4ceec752ee5d8474599d49acb5c2cd9f: 153
+    ca0360e2176e04e4988a1b476ab07a72: -9.833286
     bf22584336650094490b410b295dcafa: 0.022
     cba664760e9a3d141bdc722563c13849: -19.4
     8a5e91b7884ba0543837a348b4d4f8ac: 13.4
     3dd3db58d7d53b941a5b0b40e0344ab7: 0
-    2a63b1e90d3c46f4bbe6559f914c176c: -9.6
+    2a63b1e90d3c46f4bbe6559f914c176c: -12.800335
     2b1c7bea96f59ea4795d8723a64c51e7: 1.3
     4ad75d6b947c280428217ddcd4589047: 18.3
+    765d9bab3956a1748a870f17c77a2647: 0.52599996
     0ca5993ccd4f97846aded788155a0f78: -400
     5c2222bd2517f5e4f8bba0ba79919163: -20.8
-    6b0258bda5a46ea4288b4cad457af5c0: -2000
+    6b0258bda5a46ea4288b4cad457af5c0: -3004
     d462176e1e1564449a203d48418dbebf: -602
+    fc22649ee44807b459c85c8d5d6d82fe: 0.41599998
     6553b6dfc26a6f245b5acaf1dd0427be: 13.9
   m_TransitionOverrides: {}
 --- !u!243 &3748171040502812203
@@ -396,6 +424,7 @@ AudioMixerGroupController:
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: -3634716838147222383}
+  - {fileID: -53993095697705947}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0

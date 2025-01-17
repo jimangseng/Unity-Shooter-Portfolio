@@ -11,6 +11,8 @@ public class Enemy : UnitWithSlider
     {
         totalHP = 15;
         currentHP = 15;
+
+        GetComponent<AudioSource>().Play();
     }
 
     private void Update()
