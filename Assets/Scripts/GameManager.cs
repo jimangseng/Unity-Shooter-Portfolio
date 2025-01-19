@@ -36,38 +36,41 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
     #endregion
+    [Header("Managers")]
+    [SerializeField] LevelManager levelManager;
+    [SerializeField] StageManager stageManager;
+
     [Header("Level")]
-    public LevelManager levelManager;
-    public Level level;
+    [SerializeField] Level level;
 
     [Header("Player & Enemy")]
-    public GameObject player;
-    public GameObject enemy;
-    public List<GameObject> enemies;
+    [SerializeField] GameObject player;
+    [SerializeField] GameObject enemyObject;
 
-    public StageManager stageManager;
+    public List<GameObject> Enemies { get; set; }
+    public int Kills { get; set; } = 0;
 
-    public int kills = 0;
+    readonly float updateEnemyInterval = 1.0f;
+    readonly int maxEnemy = 5;
 
     // Start is called before the first frame updatez`
     void Start()
     {
+        // Stage Manager
+        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+        stageManager.startStage();
 
         // initialize enemy list
-        enemies = new List<GameObject>();
+        Enemies = new List<GameObject>();
 
         // designate level to level manager
         levelManager.SetLevel(level);
 
         // update level
         StartCoroutine(levelManager.UpdateLevel());
-        //StartCoroutine(levelManager.UpdateNavMeshData());
 
         // start to spawn enemies
-        StartCoroutine(SpawnEnemies());
-
-        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
-        stageManager.startStage();
+        StartCoroutine(UpdateEnemies());
     }
 
     // Update is called once per frame
@@ -77,73 +80,66 @@ public class GameManager : MonoBehaviour
     }
 
     // repeatedly spawn enemies
-    IEnumerator SpawnEnemies()
+    IEnumerator UpdateEnemies()
     {
+
+        Rect mapRect;
+
+        Quaternion rotation;
+        Vector3 position;
+
+        GameObject instance;
+
         while (true)
         {
-            GameObject enemyInstance = null;
+            mapRect = levelManager.mapRect;
 
-            if (enemies.Count >= 0 && enemies.Count < 5)
+            while(Enemies.Count >= 0 && Enemies.Count < maxEnemy)
             {
-                // 적 스폰
-                Quaternion rotation = Quaternion.Euler(new Vector3(0.0f, Random.Range(0.0f, 360.0f), 0.0f));
-
-                Vector3 enemyPosition = new Vector3(
+                rotation = Quaternion.Euler(new Vector3(0.0f, Random.Range(0.0f, 360.0f), 0.0f));
+                position = new Vector3(
                     player.transform.position.x + Random.Range(1.0f, 5.0f),
-                    2.5f,
-                    player.transform.position.z + Random.Range(1.0f, 5.0f));
-                enemyInstance = Instantiate(enemy, enemyPosition, rotation);
+                    1.5f,
+                    player.transform.position.z + Random.Range(1.0f, 5.0f)
+                    );
 
-                // set enemy
-                enemyInstance.SetActive(true);
-                enemyInstance.transform.GetChild(0).gameObject.SetActive(false);
-                enemies.Add(enemyInstance);
+                if (position.x > mapRect.maxX)
+                {
+                    position.x = mapRect.maxX;
+                }
+                else if (position.x < mapRect.minX)
+                {
+                    position.x = mapRect.minX;
+                }
+                if (position.z > mapRect.maxY)
+                {
+                    position.z = mapRect.maxY;
+                }
+                else if (position.z < mapRect.minY)
+                {
+                    position.z = mapRect.minY;
+                }
 
-                enemyInstance.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
+                instance = Instantiate(enemyObject, position, rotation);
+                Enemies.Add(instance);
             }
 
-            yield return new WaitForSeconds(1.0f);
-
-            for (int i = 0; i < enemies.Count; i++)
+            foreach(var e in Enemies)
             {
-                // 맵 크기에 접근 가능해야 함.
-                Vector3 enemyPosition = enemies[i].transform.position;
-                Rect mapRect = levelManager.mapRect;
-                if (enemyPosition.x > mapRect.maxX)
-                {
-                    enemyPosition.x -= enemyPosition.x - mapRect.maxX;
-                }
-                else if (enemyPosition.x < mapRect.minX)
-                {
-                    enemyPosition.x += mapRect.maxX - enemyPosition.x;
-                }
-                else if (enemyPosition.y > mapRect.maxY)
-                {
-                    enemyPosition.y -= enemyPosition.y - mapRect.maxY;
-                }
-                else
-                {
-                    enemyPosition.y += mapRect.maxY - enemyPosition.y;
-                }
+                e.SetActive(true);
 
-                if (enemies[i].activeInHierarchy)
-                {
-                    // start to move
-                    enemies[i].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = true;
-                    // set navmesh agent destination
-                    enemies[i].GetComponent<UnityEngine.AI.NavMeshAgent>().SetDestination(Vector3Int.RoundToInt( player.transform.position));
-                    // activate  trail particle system
-                    enemies[i].transform.GetChild(0).gameObject.SetActive(true);
-                }
-                else
-                {
-                    enemies[i].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = true;
+                // set navmesh agent destination and start to move
+                e.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = true;
+                e.GetComponent<UnityEngine.AI.NavMeshAgent>().SetDestination(Vector3Int.RoundToInt(player.transform.position));
 
-                    Destroy(enemies[i], 0.01f);
-                    enemies.Remove(enemies[i]);
-                }
+                // activate  trail particle system
+                e.transform.GetChild(0).gameObject.SetActive(true);
             }
 
+            yield return new WaitForSeconds(updateEnemyInterval);
         }
+
+
     }
+
 }

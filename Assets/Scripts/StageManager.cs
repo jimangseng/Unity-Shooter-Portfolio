@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class StageManager : MonoBehaviour
 {
-    public TextMeshProUGUI timeUI;
-    public TextMeshProUGUI stageUI;
-    public TextMeshProUGUI enemyUI;
+    [SerializeField] TextMeshProUGUI timeUI;
+    [SerializeField] TextMeshProUGUI stageUI;
+    [SerializeField] TextMeshProUGUI enemyUI;
 
-    public Stage stage;
+    [SerializeField] Stage stage;
 
     int currentStage;
 
@@ -23,7 +23,7 @@ public class StageManager : MonoBehaviour
     void Update()
     {
         timeUI.SetText(stage.remainingTime.ToString("F2"));
-        enemyUI.SetText("킬: " + GameManager.Instance.kills.ToString());
+        enemyUI.SetText("킬: " + GameManager.Instance.Kills.ToString());
 
         if(stage.remainingTime < 0.0f)
         {

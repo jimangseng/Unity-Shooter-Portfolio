@@ -13,13 +13,13 @@ using Enums;
 public class CharacterController : MonoBehaviour
 {
     // GameObjects
-    public GameObject player;
-    public GameObject moveCursor;
-    public GameObject targetCursor;
-    public GameObject projectileManager;
+    [SerializeField] GameObject player;
+    [SerializeField] GameObject moveCursor;
+    [SerializeField] GameObject targetCursor;
+    [SerializeField] GameObject projectileManager;
 
-    public LineRenderer lineRenderer;
-    const int lineSegments = 20;
+    [SerializeField] LineRenderer lineRenderer;
+    readonly int lineSegments = 20;
 
     public static Trace trace = new Trace();
 
@@ -142,8 +142,6 @@ public class CharacterController : MonoBehaviour
 
     void QuitAim()
     {
-        // trace.Reset(); // 왜?
-
         targetCursor.SetActive(false);
         lineRenderer.enabled = false;
 
@@ -159,7 +157,6 @@ public class CharacterController : MonoBehaviour
         targetCursor.SetActive(true);
 
         player.transform.LookAt(targetPosition);
-
 
         // position to fire the projectile
         Vector3 firePosition = Vector3.MoveTowards(player.transform.position, targetCursor.transform.position, 0.5f);
@@ -234,7 +231,7 @@ public class CharacterController : MonoBehaviour
 
         for (int i = 0; i < lineSegments; ++i)
         {
-            tPositions[i] = _trace.from + trace.GetPositionByTime(i * 0.05f);
+            tPositions[i] = _trace.From + trace.GetPositionByTime(i * 0.05f);
         }
 
         lineRenderer.SetPositions(tPositions);

@@ -2436,12 +2436,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelManager: {fileID: 895173676}
+  stageManager: {fileID: 824107989}
   level: {fileID: 882057782}
   player: {fileID: 1999500841}
-  enemy: {fileID: 2095213611}
-  enemies: []
-  stageManager: {fileID: 0}
-  kills: 0
+  enemyObject: {fileID: 2095213611}
 --- !u!1 &1871552339
 GameObject:
   m_ObjectHideFlags: 3
@@ -2824,7 +2822,7 @@ MonoBehaviour:
   moveCursor: {fileID: 1739814620}
   targetCursor: {fileID: 1032285350}
   projectileManager: {fileID: 996662626}
-  lineRenderer: {fileID: 0}
+  lineRenderer: {fileID: 1526988569}
 --- !u!1 &2070764223
 GameObject:
   m_ObjectHideFlags: 0
@@ -3082,7 +3080,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 1628446077}
-  ap: 5
 --- !u!1 &2112564225
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,8 +23,11 @@ public class LevelManager : MonoBehaviour
 
     TileList tiles = new TileList();
 
-    float range = 20.0f;
-    float updateTime = 0.5f;
+    readonly float mapSize = 20.0f;
+    readonly float updateLevelInterval = 0.5f;
+    readonly float minPerlinSeed = 100.0f;
+    readonly float maxPerlinSeed = 1000.0f;
+
 
     public Rect playerRect;
     public Rect mapRect;
@@ -38,12 +41,12 @@ public class LevelManager : MonoBehaviour
     private void Start()
     {
         // Rect 관련
-        playerRect = new Rect(-range, range, -range, range);
-        mapRect = new Rect(-range, range, -range, range);
+        playerRect = new Rect(-mapSize, mapSize, -mapSize, mapSize);
+        mapRect = new Rect(-mapSize, mapSize, -mapSize, mapSize);
         
         navMeshDataInstance = new NavMeshDataInstance();
 
-        perlinSeed = Random.Range(100.0f, 1000.0f); // 범위는 어떻게 정해야하나?
+        perlinSeed = Random.Range(minPerlinSeed, maxPerlinSeed); // 범위는 어떻게 정해야하나?
     }
 
     private void Update()
@@ -60,38 +63,29 @@ public class LevelManager : MonoBehaviour
     {
         while (true)
         {
-            // 영역들을 업데이트
+            // 영역 업데이트
             UpdatePlayerRect(level.PlayerObject.transform.position);
             UpdateMapRect();
 
             // 타일 리스트 업데이트
-            AddToTileList();
-
-            // 타일이 mapRect 바깥에 있으면 리스트에서 제거
-            tiles.RemoveIf(t => t.x < mapRect.minX || t.x > mapRect.maxX || t.y < mapRect.minY || t.y > mapRect.maxY);
+            UpdateTileList();
 
             /// 매 업데이트마다 중복 적용되고 있다. 최적화 필요
+            // 장애물 추가
+            AddObstacle(tiles);
 
-
+            // NavMesh 데이터를 업데이트
+            UpdateNavMeshData();
 
             // 머티리얼 적용
             tiles.ApplyMaterials(level.LevelMaterials);
 
-            // 높이 추가
-            AddObstacle(tiles);
-
-            // AABB 콜라이더 업데이트
-            tiles.UpdateAABBCollider(level.gameObject);
-
-            UpdateNavMeshData();
-
             // 부모 지정
             tiles.SetParent(level.gameObject);
 
-            // 그리기
             tiles.Show();
 
-            yield return new WaitForSeconds(updateTime);
+            yield return new WaitForSeconds(updateLevelInterval);
         }
     }
 
@@ -118,6 +112,9 @@ public class LevelManager : MonoBehaviour
 
     public void UpdateNavMeshData()
     {
+        // AABB 콜라이더 업데이트
+        tiles.UpdateAABBCollider(level.gameObject);
+
         NavMesh.RemoveNavMeshData(navMeshDataInstance);
 
         BoxCollider collider = level.GetComponent<BoxCollider>();
@@ -162,10 +159,10 @@ public class LevelManager : MonoBehaviour
 
     void UpdatePlayerRect(Vector3 _position)
     {
-        playerRect.minX = (_position.x) - range;
-        playerRect.maxX = (_position.x) + range;
-        playerRect.minY = (_position.z) - range;
-        playerRect.maxY = (_position.z) + range;
+        playerRect.minX = (_position.x) - mapSize;
+        playerRect.maxX = (_position.x) + mapSize;
+        playerRect.minY = (_position.z) - mapSize;
+        playerRect.maxY = (_position.z) + mapSize;
     }
 
     void UpdateMapRect()
@@ -198,8 +195,9 @@ public class LevelManager : MonoBehaviour
         //Debug.Log(mapRect.minX + ", " + mapRect.maxX + ", " + mapRect.minY + ", " + mapRect.maxY);
     }
 
-    void AddToTileList()
+    void UpdateTileList()
     {
+        // TODO : 최적화
         // player Rect을 순회
         for (int i = Mathf.FloorToInt(playerRect.minY); i < Mathf.CeilToInt(playerRect.maxY); i++)
         {
@@ -209,7 +207,8 @@ public class LevelManager : MonoBehaviour
 
                 if (tTile == null)
                 {
-                    GameObject tObject = Object.Instantiate(level.TileObject, new Vector3(j, 0, i), level.TileObject.transform.rotation);
+                    // 타일 추가
+                    GameObject tObject = Instantiate(level.TileObject, new Vector3(j, 0, i), level.TileObject.transform.rotation);
                     tTile = new Tile(j, i, tObject);
 
                     float perlinValue = Mathf.PerlinNoise(tTile.tile.transform.position.x * 0.1f + perlinSeed, tTile.tile.transform.position.z * 0.1f + perlinSeed);
@@ -219,5 +218,8 @@ public class LevelManager : MonoBehaviour
                 }
             }
         }
+
+        // 타일이 mapRect 바깥에 있으면 리스트에서 제거
+        tiles.RemoveIf(t => t.x < mapRect.minX || t.x > mapRect.maxX || t.y < mapRect.minY || t.y > mapRect.maxY);
     }
 }

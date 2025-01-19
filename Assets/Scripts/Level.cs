@@ -59,6 +59,8 @@ public class TileList
     public List<Tile> list;
     List<Tile> listToRemove;
 
+    readonly int materialCount = 5;
+
     public TileList()
     {
         list = new List<Tile>();
@@ -111,7 +113,7 @@ public class TileList
     {
         foreach (var t in list)
         {
-            int tIndex = Mathf.FloorToInt(t.perlinValue * (5.0f));
+            int tIndex = Mathf.FloorToInt(t.perlinValue * materialCount);
             t.tile.GetComponent<MeshRenderer>().material = _mats[tIndex];
         }
     }
@@ -134,6 +136,7 @@ public class TileList
         }
     }
 
+    // 레벨 전체의 콜라이더를 생성하는 데에 사용한다. NavMesh 생성을 위해 필요하다.
     public void UpdateAABBCollider(GameObject _level)
     {
         Bounds totalBounds;
@@ -144,13 +147,10 @@ public class TileList
         foreach (var t in list)
         {
             totalBounds.Encapsulate(t.tile.GetComponent<MeshRenderer>().bounds);
-            //UnityEngine.Object.Destroy(t.tile.GetComponent<BoxCollider>());
         }
 
         _level.GetComponent<BoxCollider>().center = totalBounds.center;
         _level.GetComponent<BoxCollider>().size = totalBounds.size;
-
-        //_level.GetComponent<BoxCollider>().enabled = false;
     }
 
 

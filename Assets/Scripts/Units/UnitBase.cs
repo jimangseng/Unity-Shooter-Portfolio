@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class UnitBase : MonoBehaviour
 {
-    protected int totalHP;
-    protected int currentHP;
+    protected int TotalHP { get; set; }
+    protected int CurrentHP { get; set; }
 
     private void Start()
     {
-        totalHP = 32;
-        currentHP = 32;
+        TotalHP = 32;
+        CurrentHP = 32;
     }
 
     protected virtual void Damage(int _damage)
     {
-        currentHP -= _damage;
+        CurrentHP -= _damage;
     }
 }

@@ -10,7 +10,7 @@ public class BasicProjectile : ProjectileBase
 
     protected void Start()
     {
-        damage = 5;
+        Damange = 5;
 
         forceDirection = Vector3.Normalize(to - from);
 

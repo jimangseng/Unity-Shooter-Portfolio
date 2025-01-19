@@ -6,16 +6,14 @@ using UnityEngine;
 
 public class Cannon : ProjectileBase
 {
-
     Trace trace;
 
     public Vector3 position = Vector3.zero;
     Vector3 playerPosition = Vector3.zero;
 
-
     protected void Start()
     {
-        damage = 15;
+        Damange = 15;
 
         this.trace = new Trace(CharacterController.trace);
 

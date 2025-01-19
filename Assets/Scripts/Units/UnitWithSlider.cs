@@ -16,6 +16,6 @@ public class UnitWithSlider : UnitBase
     {
         base.Damage(_damage);
 
-        slider.value = (float)currentHP / (float)totalHP;
+        slider.value = (float)CurrentHP / (float)TotalHP;
     }
 }
