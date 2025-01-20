@@ -15,7 +15,7 @@ public class Cannon : ProjectileBase
     {
         Damange = 15;
 
-        this.trace = new Trace(CharacterController.trace);
+        this.trace = new Trace(Projectiles.trace);
 
         trace.Reset();
 

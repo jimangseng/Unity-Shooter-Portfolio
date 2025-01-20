@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UIElements;
 using static Cinemachine.DocumentationSortingAttribute;
 
 public class Level : MonoBehaviour
@@ -12,60 +14,180 @@ public class Level : MonoBehaviour
     [field: SerializeField] public GameObject TileObject { get; set; }
     [field: SerializeField] public GameObject ObstacleObject { get; set; }
     [field: SerializeField] public Material[] LevelMaterials { get; set; }
-}
 
-public class Tile
-{
-    public Tile(GameObject _tile)
-    {
-        x = _tile.transform.position.x;
-        y = _tile.transform.position.z;
-        tile = _tile;
-    }
+    List<Tile> list { get; set; }
+    List<Tile> listToRemove { get; set; }
+    public List<Tile> listToUpdate { get; set; }
 
-    public Tile(float _x, float _y, GameObject _tile)
-    {
-        x = _x;
-        y = _y;
-        tile = _tile;
-    }
+    public Area Area { get; set; }
 
-    public float x;
-    public float y;
-    public GameObject tile;
-    public float perlinValue;
-
-    public bool updated;
-}
-
-public class Rect
-{
-    public Rect(float _minX, float _maxX, float _minY, float _maxY)
-    {
-        minX = _minX;
-        maxX = _maxX;
-        minY = _minY;
-        maxY = _maxY;
-    }
-
-    public float minX = 0;
-    public float maxX = 0;
-    public float minY = 0;
-    public float maxY = 0;
-}
-
-public class TileList
-{
-    public List<Tile> list;
-    List<Tile> listToRemove;
-
+    readonly float minPerlinSeed = 100.0f;
+    readonly float maxPerlinSeed = 1000.0f;
     readonly int materialCount = 5;
 
-    public TileList()
+    readonly float mapSize = 20.0f;
+    readonly float obstacleFactor = 3.0f;
+
+    float perlinSeed; // 범위는 어떻게 정해야하나?
+
+    NavMeshDataInstance navMeshDataInstance;
+
+    private void Start()
     {
         list = new List<Tile>();
         listToRemove = new List<Tile>();
+        listToUpdate = new List<Tile>();
+
+        Area = new Area();
+
+        perlinSeed = UnityEngine.Random.Range(minPerlinSeed, maxPerlinSeed);
+
+        navMeshDataInstance = new NavMeshDataInstance();
     }
+
+    public void UpdateArea()
+    {
+        Area.minX = PlayerObject.transform.position.x - mapSize;
+        Area.maxX = PlayerObject.transform.position.x + mapSize;
+        Area.minY = PlayerObject.transform.position.z - mapSize;
+        Area.maxY = PlayerObject.transform.position.z + mapSize;
+    }
+
+    public void AddTileToUpdateList()
+    {
+        // 영역 순회
+        for (int i = Mathf.CeilToInt(Area.minY); i < Mathf.CeilToInt(Area.maxY); i++)
+        {
+            for (int j = Mathf.CeilToInt(Area.minX); j < Mathf.CeilToInt(Area.maxX); j++)
+            {
+                Tile tTile = GetTile(j, i);
+
+                if (tTile == null)  // 해당 위치에 타일이 존재하지 않으면
+                {
+                    // 업데이트 리스트에 타일 추가
+                    GameObject tObject = UnityEngine.Object.Instantiate(TileObject, new Vector3(j, 0, i), TileObject.transform.rotation);
+                    tTile = new Tile(j, i, tObject);
+
+                    float perlinValue = Mathf.PerlinNoise(tTile.tile.transform.position.x * 0.1f + perlinSeed, tTile.tile.transform.position.z * 0.1f + perlinSeed);
+                    tTile.perlinValue = Mathf.Clamp01(perlinValue);
+
+                    listToUpdate.Add(tTile);
+                }
+            }
+        }
+    }
+
+    public void RemoveOutdatedTile()
+    {
+        // 타일이 영역 바깥에 있으면 리스트에서 제거
+        RemoveIf(t => t.x < Area.minX || t.x > Area.maxX || t.y < Area.minY || t.y > Area.maxY);
+    }
+
+
+    public void ApplyMaterials(Material[] _mats)
+    {
+        foreach (var t in listToUpdate)
+        {
+            int tIndex = Mathf.FloorToInt(t.perlinValue * materialCount);
+            t.tile.GetComponent<MeshRenderer>().material = _mats[tIndex];
+        }
+    }
+
+    public void ParentAndActive(GameObject _parent)
+    {
+        foreach (var t in listToUpdate)
+        {
+            t.tile.transform.SetParent(_parent.transform);
+            t.tile.SetActive(true);
+            t.Updated = true;
+        }
+
+    }
+
+    public void RenewList()
+    {
+        foreach (var t in listToUpdate)
+        {
+            list.Add(t);
+        }
+        listToUpdate.Clear();
+    }
+
+
+    // 레벨 전체의 콜라이더를 생성하는 데에 사용한다. NavMesh 생성을 위해 필요하다.
+    public void UpdateAABBCollider()
+    {
+        Bounds totalBounds;
+
+        Tile startingPoint = list.ElementAt(0);
+
+        totalBounds = startingPoint.tile.GetComponent<MeshRenderer>().bounds;
+
+        foreach (var t in list)
+        {
+            totalBounds.Encapsulate(t.tile.GetComponent<MeshRenderer>().bounds);
+        }
+
+        GetComponent<BoxCollider>().center = totalBounds.center;
+        GetComponent<BoxCollider>().size = totalBounds.size;
+    }
+
+    public void CreateObstacles()
+    {
+        List<Tile> list = listToUpdate;
+
+        foreach (var t in list)
+        {
+            if (Mathf.FloorToInt(t.perlinValue * obstacleFactor) > 1)
+            {
+                Vector3 tPosition = new Vector3(0.0f, 1.0f, 0.0f);
+                Transform tTransform = t.tile.transform;
+                tTransform.Translate(tPosition);
+
+                t.tile.layer = LayerMask.NameToLayer("Obstacle");
+            }
+        }
+    }
+
+    public void UpdateNavMeshData()
+    {
+        UpdateAABBCollider();
+
+        NavMesh.RemoveNavMeshData(navMeshDataInstance);
+
+        BoxCollider collider = GetComponent<BoxCollider>();
+
+        NavMeshBuildSettings settings = new NavMeshBuildSettings();
+
+        Matrix4x4 matrix = new Matrix4x4();
+
+        List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
+        NavMeshBuildSource source;
+
+        NavMeshData data = new NavMeshData();
+
+        settings = GetComponent<NavMeshSurface>().GetBuildSettings();
+
+        foreach (var t in list)
+        {
+            if (t.tile.layer != LayerMask.NameToLayer("Level"))
+            {
+                continue;
+            }
+
+            source = new NavMeshBuildSource();
+
+            source.transform = t.tile.transform.localToWorldMatrix;
+            source.shape = NavMeshBuildSourceShape.Box;
+            source.size = t.tile.GetComponent<BoxCollider>().size;
+            sources.Add(source);
+        }
+
+        data = NavMeshBuilder.BuildNavMeshData(settings, sources, collider.bounds, Vector3.zero, Quaternion.identity);
+        navMeshDataInstance = NavMesh.AddNavMeshData(data);
+
+    }
+
 
     public Tile GetTile(int _x, int _y)
     {
@@ -104,54 +226,57 @@ public class TileList
             list.Remove(t);
         }
     }
+}
 
-    public List<Tile> GetList()
+public class Tile
+{
+    public Tile(GameObject _tile)
     {
-        return list;
-    }
-    public void ApplyMaterials(Material[] _mats)
-    {
-        foreach (var t in list)
-        {
-            int tIndex = Mathf.FloorToInt(t.perlinValue * materialCount);
-            t.tile.GetComponent<MeshRenderer>().material = _mats[tIndex];
-        }
+        x = _tile.transform.position.x;
+        y = _tile.transform.position.z;
+        tile = _tile;
     }
 
-    public void Show()
+    public Tile(float _x, float _y, GameObject _tile)
     {
-        foreach (var t in list)
-        {
-            //t.tile.transform.SetParent(t.tile.transform.parent);
-            t.tile.SetActive(true);
-        }
+        x = _x;
+        y = _y;
+        tile = _tile;
+    }
+
+    public float x;
+    public float y;
+    public GameObject tile;
+    public float perlinValue;
+
+    public bool Updated { get; set; }
+}
+
+public class Area
+{
+    public float minX = 0;
+    public float maxX = 0;
+    public float minY = 0;
+    public float maxY = 0;
+
+    public Area()
+    {
 
     }
 
-    public void SetParent(GameObject _parent)
+    public Area(float _minX, float _maxX, float _minY, float _maxY)
     {
-        foreach(var t in list)
-        {
-            t.tile.transform.SetParent(_parent.transform);
-        }
+        minX = _minX;
+        maxX = _maxX;
+        minY = _minY;
+        maxY = _maxY;
     }
 
-    // 레벨 전체의 콜라이더를 생성하는 데에 사용한다. NavMesh 생성을 위해 필요하다.
-    public void UpdateAABBCollider(GameObject _level)
+    public Area (Vector3 _position, float _mapSize)
     {
-        Bounds totalBounds;
-
-        Tile startingPoint = list.ElementAt(0);
-        totalBounds = startingPoint.tile.GetComponent<MeshRenderer>().bounds;
-
-        foreach (var t in list)
-        {
-            totalBounds.Encapsulate(t.tile.GetComponent<MeshRenderer>().bounds);
-        }
-
-        _level.GetComponent<BoxCollider>().center = totalBounds.center;
-        _level.GetComponent<BoxCollider>().size = totalBounds.size;
+        minX = _position.x - _mapSize;
+        maxX = _position.x + _mapSize;
+        minY = _position.z - _mapSize;
+        maxY = _position.z + _mapSize;
     }
-
-
 }

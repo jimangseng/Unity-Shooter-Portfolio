@@ -18,11 +18,6 @@ public class CharacterController : MonoBehaviour
     [SerializeField] GameObject targetCursor;
     [SerializeField] GameObject projectileManager;
 
-    [SerializeField] LineRenderer lineRenderer;
-    readonly int lineSegments = 20;
-
-    public static Trace trace = new Trace();
-
     // Components
     Animator anim;
     Projectiles projectiles;
@@ -41,8 +36,6 @@ public class CharacterController : MonoBehaviour
     {
         anim = player.GetComponent<Animator>();
         projectiles = projectileManager.GetComponent<Projectiles>();
-
-        lineRenderer = GameObject.Find("LineRenderer").GetComponent<LineRenderer>();
     }
 
     // Update is called once per frame
@@ -143,7 +136,7 @@ public class CharacterController : MonoBehaviour
     void QuitAim()
     {
         targetCursor.SetActive(false);
-        lineRenderer.enabled = false;
+        projectiles.LineRenderer.enabled = false;
 
         SwitchMode(Status.Stopped);
     }
@@ -164,10 +157,9 @@ public class CharacterController : MonoBehaviour
 
         if(attackMode == AttackMode.Cannon)
         {
-            // 미리보기
-            trace.setTrace(firePosition, targetPosition);
-            trace.calculate();
-            previewTrace(trace);
+            Projectiles.trace.setTrace(firePosition, targetPosition);
+            Projectiles.trace.calculate();
+            projectiles.previewTrace();
         }
 
 
@@ -210,31 +202,4 @@ public class CharacterController : MonoBehaviour
         attackMode = modeChangeTo;
     }
 
-
-    // 궤적 미리보기
-    public void previewTrace(Trace _trace)
-    {
-        //if (Input.GetKey("q"))
-        //{
-        //    // 발사각 상승
-        //    Debug.Log("발사각 상승");
-        //}
-        //else if (Input.GetKey("e"))
-        //{
-        //    // 발사각 하강
-        //    Debug.Log("발사각 하강");
-        //}
-
-        lineRenderer.positionCount = lineSegments;
-
-        Vector3[] tPositions = new Vector3[lineSegments];
-
-        for (int i = 0; i < lineSegments; ++i)
-        {
-            tPositions[i] = _trace.From + trace.GetPositionByTime(i * 0.05f);
-        }
-
-        lineRenderer.SetPositions(tPositions);
-        lineRenderer.enabled = true;
-    }
 }

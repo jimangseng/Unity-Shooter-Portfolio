@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
     IEnumerator UpdateEnemies()
     {
 
-        Rect mapRect;
+        Area area;
 
         Quaternion rotation;
         Vector3 position;
@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour
 
         while (true)
         {
-            mapRect = levelManager.mapRect;
+            area = level.Area;
 
             while(Enemies.Count >= 0 && Enemies.Count < maxEnemy)
             {
@@ -103,21 +103,21 @@ public class GameManager : MonoBehaviour
                     player.transform.position.z + Random.Range(1.0f, 5.0f)
                     );
 
-                if (position.x > mapRect.maxX)
+                if (position.x > area.maxX)
                 {
-                    position.x = mapRect.maxX;
+                    position.x = area.maxX;
                 }
-                else if (position.x < mapRect.minX)
+                else if (position.x < area.minX)
                 {
-                    position.x = mapRect.minX;
+                    position.x = area.minX;
                 }
-                if (position.z > mapRect.maxY)
+                if (position.z > area.maxY)
                 {
-                    position.z = mapRect.maxY;
+                    position.z = area.maxY;
                 }
-                else if (position.z < mapRect.minY)
+                else if (position.z < area.minY)
                 {
-                    position.z = mapRect.minY;
+                    position.z = area.minY;
                 }
 
                 instance = Instantiate(enemyObject, position, rotation);
