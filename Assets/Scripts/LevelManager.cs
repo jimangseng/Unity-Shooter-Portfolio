@@ -49,6 +49,7 @@ public class LevelManager : MonoBehaviour
             if (level.listToUpdate.Count > 0)
             {
                 //UnityEngine.Debug.Log(level.listToUpdate.Count);
+
                 // 장애물 추가
                 level.CreateObstacles();
 

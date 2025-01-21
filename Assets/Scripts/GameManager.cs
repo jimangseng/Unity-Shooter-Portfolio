@@ -47,20 +47,26 @@ public class GameManager : MonoBehaviour
     public GameObject player;
     [SerializeField] GameObject enemyObject;
 
+
+    // public properties
     public List<GameObject> Enemies { get; set; }
     public int Kills { get; set; } = 0;
 
+
+    // readonly
     readonly float updateEnemyInterval = 1.0f;
     readonly int maxEnemy = 5;
+
 
     // Start is called before the first frame updatez`
     void Start()
     {
-        // Stage Manager
+        //// 스테이지 관련
         stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
         stageManager.startStage();
 
 
+        //// 레벨 관련
         // build a navmesh
         level.BuildNavMeshData();
 
@@ -71,6 +77,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(levelManager.UpdateLevel());
 
 
+        //// 적 관련
         // initialize enemy list
         Enemies = new List<GameObject>();
 
@@ -87,6 +94,7 @@ public class GameManager : MonoBehaviour
 
     void SpawnEnemy()
     {
+        // 적 transform 정의
         Quaternion rotation = Quaternion.Euler(new Vector3(0.0f, Random.Range(0.0f, 360.0f), 0.0f));
         Vector3 position = new Vector3(
             player.transform.position.x + Random.Range(1.0f, 5.0f),
@@ -94,6 +102,7 @@ public class GameManager : MonoBehaviour
             player.transform.position.z + Random.Range(1.0f, 5.0f)
             );
 
+        // 적 스폰 공간 제한
         if (position.x > level.Area.maxX)
         {
             position.x = level.Area.maxX;
@@ -111,11 +120,12 @@ public class GameManager : MonoBehaviour
             position.z = level.Area.minY;
         }
 
+        // 스폰
         GameObject instance = Instantiate(enemyObject, position, rotation);
         Enemies.Add(instance);
     }
 
-    // repeatedly spawn enemies
+
     IEnumerator UpdateEnemies()
     {
         while (true)
@@ -132,15 +142,11 @@ public class GameManager : MonoBehaviour
                 enemy.GetComponent<NavMeshAgent>().enabled = true;
                 enemy.GetComponent<NavMeshAgent>().SetDestination(player.transform.position);
 
-
                 enemy.transform.GetChild(0).gameObject.SetActive(true);
-
             }
 
             yield return new WaitForSeconds(updateEnemyInterval);
         }
 
-
     }
-
 }

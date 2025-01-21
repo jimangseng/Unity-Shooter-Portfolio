@@ -4,21 +4,24 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Enums;
 
-public class Projectiles : MonoBehaviour
+public class ProjectilesManager : MonoBehaviour
 {
-    public LineRenderer LineRenderer { get; set; }
-    readonly int lineSegments = 20;
-
+    // 
     public GameObject[] projectiles;
     protected GameObject projInstance;
 
+    // 대포 궤적
     public static Trace trace;
+
+    // Cannon 궤적을 그리기 위한 LineRenderer 관련
+    public LineRenderer LineRenderer { get; set; }
+    readonly int lineSegments = 20;
 
     private void Start()
     {
-        LineRenderer = GameObject.Find("LineRenderer").GetComponent<LineRenderer>();
-
         trace = new Trace();
+
+        LineRenderer = GameObject.Find("LineRenderer").GetComponent<LineRenderer>();
     }
 
     private void Update()
@@ -28,35 +31,26 @@ public class Projectiles : MonoBehaviour
 
     public void Instantiate(Vector3 _from, Vector3 _to, AttackMode _mode)
     {
+        GameObject projectile = null;
+
         switch(_mode)
         {
             case AttackMode.Basic:
-                projInstance = Instantiate(projectiles[0], _from, Quaternion.LookRotation(Vector3.forward));
+                projectile = projectiles[0];
                 break;
 
             case AttackMode.Cannon:
-                projInstance = Instantiate(projectiles[1], _from, Quaternion.LookRotation(Vector3.forward));
+                projectile = projectiles[1];
                 break;
         }
 
+        projInstance = Instantiate(projectile, _from, Quaternion.LookRotation(Vector3.forward), transform);
         projInstance.GetComponent<ProjectileBase>().SetFromAndTo(_from, _to);
-        projInstance.transform.SetParent(transform);
     }
 
     // 궤적 미리보기
     public void previewTrace()
     {
-        //if (Input.GetKey("q"))
-        //{
-        //    // 발사각 상승
-        //    Debug.Log("발사각 상승");
-        //}
-        //else if (Input.GetKey("e"))
-        //{
-        //    // 발사각 하강
-        //    Debug.Log("발사각 하강");
-        //}
-
         LineRenderer.positionCount = lineSegments;
 
         Vector3[] tPositions = new Vector3[lineSegments];

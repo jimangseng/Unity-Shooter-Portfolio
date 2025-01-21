@@ -20,7 +20,7 @@ public class CharacterController : MonoBehaviour
 
     // Components
     Animator anim;
-    Projectiles projectiles;
+    ProjectilesManager projectiles;
 
     // Move 관련
     Vector3 playerDestination = Vector3.zero;
@@ -35,7 +35,7 @@ public class CharacterController : MonoBehaviour
     void Start()
     {
         anim = player.GetComponent<Animator>();
-        projectiles = projectileManager.GetComponent<Projectiles>();
+        projectiles = projectileManager.GetComponent<ProjectilesManager>();
     }
 
     // Update is called once per frame
@@ -157,8 +157,8 @@ public class CharacterController : MonoBehaviour
 
         if(attackMode == AttackMode.Cannon)
         {
-            Projectiles.trace.setTrace(firePosition, targetPosition);
-            Projectiles.trace.calculate();
+            ProjectilesManager.trace.setTrace(firePosition, targetPosition);
+            ProjectilesManager.trace.calculate();
             projectiles.previewTrace();
         }
 
@@ -176,11 +176,6 @@ public class CharacterController : MonoBehaviour
 
         projectiles.Instantiate(tFrom, tTo, _mode);
     }
-
-
-
-    ///
-    ///
 
     Vector3 GetRaycastHitpoint()
     {

@@ -113,7 +113,5 @@ public class Trace
 
         Position = Vector3.zero;
         Velocity = Vector3.zero;
-
-
     }
 }

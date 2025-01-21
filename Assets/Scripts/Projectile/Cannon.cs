@@ -15,8 +15,7 @@ public class Cannon : ProjectileBase
     {
         Damange = 15;
 
-        this.trace = new Trace(Projectiles.trace);
-
+        trace = new Trace(ProjectilesManager.trace);
         trace.Reset();
 
         playerPosition = from;
@@ -36,26 +35,4 @@ public class Cannon : ProjectileBase
         }
 
     }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        GameObject collidee = collision.gameObject;
-        GameObject collider = gameObject;
-
-        if(collidee.tag == "Enemy")
-        {
-            collider.SetActive(false);
-            Destroy(collider);
-        }
-
-    }
-
-    private void OnDestroy()
-    {
-
-    }
-
-
-
-
 }

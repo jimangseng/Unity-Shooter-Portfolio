@@ -10,26 +10,37 @@ using static Cinemachine.DocumentationSortingAttribute;
 
 public class Level : MonoBehaviour
 {
+    // Objects
     [field: SerializeField] public GameObject PlayerObject { get; set; }
     [field: SerializeField] public GameObject TileObject { get; set; }
     [field: SerializeField] public GameObject ObstacleObject { get; set; }
     [field: SerializeField] public Material[] LevelMaterials { get; set; }
 
+
+    // Lists
     List<Tile> list { get; set; }
-    List<Tile> listToRemove { get; set; }
+    List<Tile> listToRemove { get; set; }   // 필요한가?
     public List<Tile> listToUpdate { get; set; }
 
-    public Area Area { get; set; }
 
+    // Readonly
     readonly float minPerlinSeed = 100.0f;
     readonly float maxPerlinSeed = 1000.0f;
+    
     readonly int materialCount = 5;
 
     readonly float mapSize = 20.0f;
     readonly float obstacleFactor = 3.0f;
 
+
+    // public properties
+    public Area Area { get; set; }
+
+
+    // private fields
     float perlinSeed; // 범위는 어떻게 정해야하나?
 
+    // navmesh 관련
     Collider collider;
     NavMeshDataInstance navMeshDataInstance;
     NavMeshData navMeshData;
@@ -37,8 +48,10 @@ public class Level : MonoBehaviour
     List<NavMeshBuildSource> navMeshSources = new List<NavMeshBuildSource>();
     NavMeshBuildSource navMeshSource;
 
+
     private void Start()
     {
+        // 필드 초기화
         list = new List<Tile>();
         listToRemove = new List<Tile>();
         listToUpdate = new List<Tile>();
@@ -94,6 +107,7 @@ public class Level : MonoBehaviour
     {
         foreach (var t in listToUpdate)
         {
+            // 타일 내의 펄린값을 이용하여 타일 머티리얼 종류 결정
             int tIndex = Mathf.FloorToInt(t.perlinValue * materialCount);
             t.tile.GetComponent<MeshRenderer>().material = _mats[tIndex];
         }
@@ -101,6 +115,8 @@ public class Level : MonoBehaviour
 
     public void RenewList()
     {
+        // 업데이트 리스트에서 현재 리스트로 데이터 이동
+        // TODO: 반복문 복사가 아니라, 리스트 자체를 바꾸면 안될까?
         foreach (var t in listToUpdate)
         {
             t.Updated = true;
@@ -134,6 +150,7 @@ public class Level : MonoBehaviour
 
         foreach (var t in list)
         {
+            // 타일 내 펄린값을 이용하여 장애물로 만들지의 여부 판단
             if (Mathf.FloorToInt(t.perlinValue * obstacleFactor) > 1)
             {
                 Vector3 tPosition = new Vector3(0.0f, 1.0f, 0.0f);
@@ -145,6 +162,7 @@ public class Level : MonoBehaviour
         }
     }
 
+    // 게임 스타트 시에 최초로 NavMesh데이터를 빌드한다.
     public void BuildNavMeshData()
     {
         navMeshSettings = GetComponent<NavMeshSurface>().GetBuildSettings();
@@ -157,14 +175,17 @@ public class Level : MonoBehaviour
         };
         navMeshSources.Add(navMeshSource);
 
+        // NavMeshData를 빌드할 때 필요한 것 - settings, sources, bounds
         navMeshData = NavMeshBuilder.BuildNavMeshData(navMeshSettings, navMeshSources, collider.bounds, Vector3.zero, Quaternion.identity);
         navMeshDataInstance = NavMesh.AddNavMeshData(navMeshData);
     }
 
+    // 레벨 업데이트 루프마다 NavMesh데이터를 업데이트 한다.
     public void UpdateNavMeshData()
     {
         UpdateAABBCollider();
 
+        // TODO: NavMeshSource 역시 매 루프마다 전부 삭제하고 다시 넣을 필요가 없지 않은가?
         navMeshSources.Clear();
 
         foreach (var t in list)
@@ -193,19 +214,7 @@ public class Level : MonoBehaviour
         //해당 위치에 타일이 있는지 검사
         Tile tTileFound = list.Find(t => (t.x == _x) && (t.y == _y));
 
-        if (tTileFound == null)
-        {
-            return null;
-        }
-        else
-        {
-            return tTileFound;
-        }
-    }
-
-    public void Add(Tile _tile)
-    {
-        list.Add(_tile);
+        return tTileFound ?? null;
     }
 
     public void RemoveAt(int _x, int _y)
@@ -227,6 +236,7 @@ public class Level : MonoBehaviour
     }
 }
 
+
 public class Tile
 {
     public Tile(GameObject _tile)
@@ -246,10 +256,11 @@ public class Tile
     public float x;
     public float y;
     public GameObject tile;
-    public float perlinValue;
+    public float perlinValue;   // 타일마다 갖는 0-1 범위의 펄린 값 - 머티리얼 결정과 장애물 생성에 사용
 
-    public bool Updated { get; set; }
+    public bool Updated { get; set; }   // 한 번 업데이트한 타일은 중복하여 업데이트 하지 않는다
 }
+
 
 public class Area
 {

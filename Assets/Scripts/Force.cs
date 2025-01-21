@@ -19,5 +19,4 @@ public struct Force
         InstantVelocity = _prev.InstantVelocity;
         CurrentPosition = _prev.CurrentPosition;
     }
-
 }

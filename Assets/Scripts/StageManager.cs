@@ -5,18 +5,20 @@ using UnityEngine;
 
 public class StageManager : MonoBehaviour
 {
+    [Header("UI")]
     [SerializeField] TextMeshProUGUI timeUI;
     [SerializeField] TextMeshProUGUI stageUI;
     [SerializeField] TextMeshProUGUI enemyUI;
 
+    [Header("Stage")]
     [SerializeField] Stage stage;
 
-    int currentStage;
+    public int CurrentStage { get; set; } = 1;
 
     // Start is called before the first frame update
     void Start()
     {
-        currentStage = 1;
+
     }
 
     // Update is called once per frame
@@ -27,23 +29,22 @@ public class StageManager : MonoBehaviour
 
         if(stage.remainingTime < 0.0f)
         {
-
             stopStage();
         }
     }
 
     public void startStage()
     {
-        stageUI.SetText("스테이지 " + currentStage);
+        stageUI.SetText("스테이지 " + CurrentStage);
 
         StartCoroutine(stage.updateStage());
     }
 
     public void stopStage()
     {
-        currentStage++;
+        CurrentStage++;
 
-        stageUI.SetText("스테이지 " + currentStage);
+        stageUI.SetText("스테이지 " + CurrentStage);
 
         StopCoroutine(stage.updateStage());
 
