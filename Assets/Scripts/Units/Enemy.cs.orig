@@ -1,0 +1,41 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+
+public class Enemy : UnitWithSlider
+{
+    public int AP { get; set; } = 10;
+
+    private void Start()
+    {
+<<<<<<< HEAD
+        TotalHP = 15;
+        CurrentHP = 15;
+=======
+        totalHP = 15;
+        currentHP = 15;
+
+        GetComponent<AudioSource>().Play();
+>>>>>>> e4f991767b3ac774ea0bc528f06d98046c0dc2fa
+    }
+
+    private void Update()
+    {
+        if(CurrentHP < 0 )
+        {
+            gameObject.SetActive(false);
+            GameManager.Instance.Kills++;
+            GameManager.Instance.Enemies.Remove(gameObject);
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.gameObject.layer == LayerMask.NameToLayer("Projectile"))
+        {
+            Damage(collision.gameObject.GetComponent<ProjectileBase>().Damange);
+        }
+    }
+}

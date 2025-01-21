@@ -49,7 +49,6 @@ public class CharacterController : MonoBehaviour
         if (Input.GetMouseButtonDown(1))    // RMB
         {
             playerDestination = GetRaycastHitpoint();
-            playerDestination.y = 0.0f;
 
             if (mode == Status.Aiming)
             {
@@ -84,8 +83,10 @@ public class CharacterController : MonoBehaviour
         {
             case Status.Moving:
 
+                player.GetComponent<AudioSource>().mute = false;
+
                 // When player moved onto the point
-                if (Vector3.Distance(player.transform.position, playerDestination) < 0.05f)
+                if (Vector3.Distance(player.transform.position, playerDestination) < 0.1f)
                 {
                     Stop();
                 }
@@ -98,6 +99,7 @@ public class CharacterController : MonoBehaviour
 
             case Status.Stopped:
 
+                player.GetComponent<AudioSource>().mute = true;
                 break;
 
             case Status.Aiming:
@@ -121,14 +123,16 @@ public class CharacterController : MonoBehaviour
     {
         anim.SetBool("isRunning", true);
 
-        playerDestination.y = 0.55f;
-        targetDirection = playerDestination - player.transform.position;
-        
+        float tx = playerDestination.x - player.transform.position.x;
+        float tZ = playerDestination.z - player.transform.position.z;
+
+        targetDirection = new Vector3(tx, 0.0f, tZ);
+            
         moveCursor.transform.position = playerDestination;
         moveCursor.SetActive(true);
 
         player.transform.rotation = Quaternion.Slerp(player.transform.rotation, Quaternion.LookRotation(targetDirection), Time.deltaTime * 8.0f);
-        player.transform.position = Vector3.MoveTowards(player.transform.position, playerDestination, Time.deltaTime * 5.0f);
+        player.transform.position = Vector3.MoveTowards(player.transform.position, new Vector3(playerDestination.x, 0.5f, playerDestination.z), Time.deltaTime * 5.0f);
 
         SwitchMode(Status.Moving);
     }
@@ -144,16 +148,15 @@ public class CharacterController : MonoBehaviour
     void Aim()
     {
         Vector3 targetPosition = GetRaycastHitpoint();
-        targetPosition.y = 0.55f;
-
         targetCursor.transform.position = targetPosition;
         targetCursor.SetActive(true);
 
+        targetPosition.y = 0.55f;
         player.transform.LookAt(targetPosition);
 
         // position to fire the projectile
         Vector3 firePosition = Vector3.MoveTowards(player.transform.position, targetCursor.transform.position, 0.5f);
-        firePosition.y += 1.5f;
+        //firePosition.y += 1.5f;
 
         if(attackMode == AttackMode.Cannon)
         {
@@ -182,7 +185,7 @@ public class CharacterController : MonoBehaviour
         Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit h;
         Physics.Raycast(r, out h);
-
+        Debug.Log(h.point);
         return h.point;
     }
 

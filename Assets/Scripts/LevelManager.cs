@@ -37,30 +37,29 @@ public class LevelManager : MonoBehaviour
     {
         while (true)
         {
-            // 영역 업데이트
+            // �역 �데�트
             level.UpdateArea();
 
-            // 업데이트 리스트에 타일 추가 및 범위를 벗어난 타일 제거
+            // �데�트 리스�에 �추� �범위�벗어��거
             level.AddTileToUpdateList();
             level.RemoveOutdatedTile();
 
-            // 새로 만들어진 타일만을 별도의 리스트에 넣어 관리한다
-            // 매 루프마다 1600개의 타일을 셋팅할 필요가 없다
+            // �로 만들�진 ��만별도리스�에 �어 관리한            // �루프마다 1600개의 ��을 �팅�요가 �다
             if (level.listToUpdate.Count > 0)
             {
                 //UnityEngine.Debug.Log(level.listToUpdate.Count);
 
-                // 장애물 추가
+                // �애�추�
                 level.CreateObstacles();
 
-                // 머티리얼 적용
+                // 머티리얼 �용
                 level.ApplyMaterials(level.LevelMaterials);
 
-                // 리스트를 업데이트한다
+                // 리스�� �데�트�다
                 level.RenewList();
 
-                // NavMesh 데이터를 업데이트
-                // NavMesh는 장애물이 전부 생성된 이후에 만들어져야하므로 리스트 업데이트 이후에 와야 한다
+                // NavMesh �이�� �데�트
+                // NavMesh�애물이 �� �성�후만들�져�하므�리스�데�트 �후��다
                 level.UpdateNavMeshData();
             }
 

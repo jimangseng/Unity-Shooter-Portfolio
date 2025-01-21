@@ -1,0 +1,112 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using NavMeshBuilder = UnityEngine.AI.NavMeshBuilder;
+using NavMeshSurface = Unity.AI.Navigation.NavMeshSurface;
+using Random = UnityEngine.Random;
+using Object = UnityEngine.Object;
+using System;
+using UnityEditor;
+using Unity.VisualScripting;
+using static Cinemachine.DocumentationSortingAttribute;
+using UnityEditor.AI;
+using UnityEngine.AI;
+using System.Diagnostics;
+using System.Linq;
+
+
+public class LevelManager : MonoBehaviour
+{
+    Level level;
+
+    readonly float updateLevelInterval = 1.0f;
+
+    /// Methodes
+
+    private void Start()
+    {
+
+    }
+
+    private void Update()
+    {
+        
+    }
+
+    public IEnumerator UpdateLevel()
+    {
+        while (true)
+        {
+            // 영역 업데이트
+            level.UpdateArea();
+
+            // 업데이트 리스트에 타일 추가 및 범위를 벗어난 타일 제거
+            level.AddTileToUpdateList();
+            level.RemoveOutdatedTile();
+
+<<<<<<< HEAD
+            // 새로 만들어진 타일만을 별도의 리스트에 넣어 관리한다
+            // 매 루프마다 1600개의 타일을 셋팅할 필요가 없다
+            if (level.listToUpdate.Count > 0)
+=======
+            // 타일이 mapRect 바깥에 있으면 리스트에서 제거
+            tiles.RemoveIf(t => t.x < mapRect.minX || t.x > mapRect.maxX || t.y < mapRect.minY || t.y > mapRect.maxY);
+
+            /// 매 업데이트마다 중복 적용되고 있다. 최적화 필요
+            // 머티리얼 적용
+            tiles.ApplyMaterials(level.LevelMaterials);
+
+            // 높이 추가
+            AddObstacle(tiles);
+
+            // AABB 콜라이더 업데이트
+            tiles.UpdateAABBCollider(level.gameObject);
+
+            UpdateNavMeshData();
+
+            // 부모 지정
+            tiles.SetParent(level.gameObject);
+
+            // 그리기
+            tiles.Show();
+
+            yield return new WaitForSeconds(updateTime);
+        }
+    }
+
+    public void AddObstacle(TileList _tiles)
+    {
+        List<Tile> list = _tiles.GetList();
+
+        foreach (var t in list)
+        {
+            int tIndex = Mathf.FloorToInt(t.perlinValue * (3.0f));
+
+            if (tIndex > 1 && !t.updated)
+>>>>>>> e4f991767b3ac774ea0bc528f06d98046c0dc2fa
+            {
+                //UnityEngine.Debug.Log(level.listToUpdate.Count);
+
+                // 장애물 추가
+                level.CreateObstacles();
+
+                // 머티리얼 적용
+                level.ApplyMaterials(level.LevelMaterials);
+
+                // 리스트를 업데이트한다
+                level.RenewList();
+
+                // NavMesh 데이터를 업데이트
+                // NavMesh는 장애물이 전부 생성된 이후에 만들어져야하므로 리스트 업데이트 이후에 와야 한다
+                level.UpdateNavMeshData();
+            }
+
+            yield return new WaitForSeconds(updateLevelInterval);
+        }
+    }
+
+    public void SetLevel(Level _level)
+    {
+        level = _level;
+    }
+}

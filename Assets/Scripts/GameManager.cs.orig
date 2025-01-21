@@ -61,22 +61,33 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame updatez`
     void Start()
     {
-        //// �테�� 관        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+<<<<<<< HEAD
+        //// 스테이지 관련
+        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
         stageManager.startStage();
 
 
-        //// �벨 관        // build a navmesh
+        //// 레벨 관련
+        // build a navmesh
         level.BuildNavMeshData();
+=======
+        // initialize enemy list
+        enemies = new List<GameObject>();
+>>>>>>> e4f991767b3ac774ea0bc528f06d98046c0dc2fa
 
         // designate level to level manager
         levelManager.SetLevel(level);
 
         // update level
         StartCoroutine(levelManager.UpdateLevel());
+<<<<<<< HEAD
 
 
-        //// 관        // initialize enemy list
+        //// 적 관련
+        // initialize enemy list
         Enemies = new List<GameObject>();
+=======
+>>>>>>> e4f991767b3ac774ea0bc528f06d98046c0dc2fa
 
         // start to spawn enemies
         StartCoroutine(UpdateEnemies());
@@ -91,7 +102,7 @@ public class GameManager : MonoBehaviour
 
     void SpawnEnemy()
     {
-        // transform �의
+        // 적 transform 정의
         Quaternion rotation = Quaternion.Euler(new Vector3(0.0f, Random.Range(0.0f, 360.0f), 0.0f));
         Vector3 position = new Vector3(
             player.transform.position.x + Random.Range(1.0f, 5.0f),
@@ -99,7 +110,7 @@ public class GameManager : MonoBehaviour
             player.transform.position.z + Random.Range(1.0f, 5.0f)
             );
 
-        // �폰 공간 �한
+        // 적 스폰 공간 제한
         if (position.x > level.Area.maxX)
         {
             position.x = level.Area.maxX;
@@ -117,7 +128,7 @@ public class GameManager : MonoBehaviour
             position.z = level.Area.minY;
         }
 
-        // �폰
+        // 스폰
         GameObject instance = Instantiate(enemyObject, position, rotation);
         Enemies.Add(instance);
     }
