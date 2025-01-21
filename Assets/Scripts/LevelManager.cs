@@ -19,19 +19,13 @@ public class LevelManager : MonoBehaviour
 {
     Level level;
 
-    readonly float updateLevelInterval = 0.5f;
-
-
+    readonly float updateLevelInterval = 1.0f;
 
     /// Methodes
 
     private void Start()
     {
 
-        
-        
-
-        
     }
 
     private void Update()
@@ -54,21 +48,18 @@ public class LevelManager : MonoBehaviour
             // 매 루프마다 1600개의 타일을 셋팅할 필요가 없다
             if (level.listToUpdate.Count > 0)
             {
-                UnityEngine.Debug.Log(level.listToUpdate.Count);
+                //UnityEngine.Debug.Log(level.listToUpdate.Count);
                 // 장애물 추가
                 level.CreateObstacles();
 
                 // 머티리얼 적용
                 level.ApplyMaterials(level.LevelMaterials);
 
-                // 부모 지정 및 활성화
-                level.ParentAndActive(level.gameObject);
-
                 // 리스트를 업데이트한다
                 level.RenewList();
 
                 // NavMesh 데이터를 업데이트
-                // NavMesh는 장애물이 전부 생성된 이후에 빌드되어야 하므로 리스트 업데이트 이후에 와야 한다
+                // NavMesh는 장애물이 전부 생성된 이후에 만들어져야하므로 리스트 업데이트 이후에 와야 한다
                 level.UpdateNavMeshData();
             }
 

@@ -2,7 +2,7 @@ using Enums;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.AI;
 using NavMeshSurface = Unity.AI.Navigation.NavMeshSurface;
 
 public class GameManager : MonoBehaviour
@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Level level;
 
     [Header("Player & Enemy")]
-    [SerializeField] GameObject player;
+    public GameObject player;
     [SerializeField] GameObject enemyObject;
 
     public List<GameObject> Enemies { get; set; }
@@ -60,8 +60,9 @@ public class GameManager : MonoBehaviour
         stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
         stageManager.startStage();
 
-        // initialize enemy list
-        Enemies = new List<GameObject>();
+
+        // build a navmesh
+        level.BuildNavMeshData();
 
         // designate level to level manager
         levelManager.SetLevel(level);
@@ -69,8 +70,13 @@ public class GameManager : MonoBehaviour
         // update level
         StartCoroutine(levelManager.UpdateLevel());
 
+
+        // initialize enemy list
+        Enemies = new List<GameObject>();
+
         // start to spawn enemies
         StartCoroutine(UpdateEnemies());
+
     }
 
     // Update is called once per frame
@@ -79,61 +85,56 @@ public class GameManager : MonoBehaviour
 
     }
 
+    void SpawnEnemy()
+    {
+        Quaternion rotation = Quaternion.Euler(new Vector3(0.0f, Random.Range(0.0f, 360.0f), 0.0f));
+        Vector3 position = new Vector3(
+            player.transform.position.x + Random.Range(1.0f, 5.0f),
+            1.5f,
+            player.transform.position.z + Random.Range(1.0f, 5.0f)
+            );
+
+        if (position.x > level.Area.maxX)
+        {
+            position.x = level.Area.maxX;
+        }
+        else if (position.x < level.Area.minX)
+        {
+            position.x = level.Area.minX;
+        }
+        if (position.z > level.Area.maxY)
+        {
+            position.z = level.Area.maxY;
+        }
+        else if (position.z < level.Area.minY)
+        {
+            position.z = level.Area.minY;
+        }
+
+        GameObject instance = Instantiate(enemyObject, position, rotation);
+        Enemies.Add(instance);
+    }
+
     // repeatedly spawn enemies
     IEnumerator UpdateEnemies()
     {
-
-        Area area;
-
-        Quaternion rotation;
-        Vector3 position;
-
-        GameObject instance;
-
         while (true)
         {
-            area = level.Area;
-
-            while(Enemies.Count >= 0 && Enemies.Count < maxEnemy)
+            while (Enemies.Count >= 0 && Enemies.Count < maxEnemy)
             {
-                rotation = Quaternion.Euler(new Vector3(0.0f, Random.Range(0.0f, 360.0f), 0.0f));
-                position = new Vector3(
-                    player.transform.position.x + Random.Range(1.0f, 5.0f),
-                    1.5f,
-                    player.transform.position.z + Random.Range(1.0f, 5.0f)
-                    );
-
-                if (position.x > area.maxX)
-                {
-                    position.x = area.maxX;
-                }
-                else if (position.x < area.minX)
-                {
-                    position.x = area.minX;
-                }
-                if (position.z > area.maxY)
-                {
-                    position.z = area.maxY;
-                }
-                else if (position.z < area.minY)
-                {
-                    position.z = area.minY;
-                }
-
-                instance = Instantiate(enemyObject, position, rotation);
-                Enemies.Add(instance);
+                SpawnEnemy();
             }
 
-            foreach(var e in Enemies)
+            foreach (var enemy in Enemies)
             {
-                e.SetActive(true);
+                enemy.SetActive(true);
 
-                // set navmesh agent destination and start to move
-                e.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = true;
-                e.GetComponent<UnityEngine.AI.NavMeshAgent>().SetDestination(Vector3Int.RoundToInt(player.transform.position));
+                enemy.GetComponent<NavMeshAgent>().enabled = true;
+                enemy.GetComponent<NavMeshAgent>().SetDestination(player.transform.position);
 
-                // activate  trail particle system
-                e.transform.GetChild(0).gameObject.SetActive(true);
+
+                enemy.transform.GetChild(0).gameObject.SetActive(true);
+
             }
 
             yield return new WaitForSeconds(updateEnemyInterval);

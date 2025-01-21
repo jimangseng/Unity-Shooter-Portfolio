@@ -30,7 +30,12 @@ public class Level : MonoBehaviour
 
     float perlinSeed; // 범위는 어떻게 정해야하나?
 
+    Collider collider;
     NavMeshDataInstance navMeshDataInstance;
+    NavMeshData navMeshData;
+    NavMeshBuildSettings navMeshSettings;
+    List<NavMeshBuildSource> navMeshSources = new List<NavMeshBuildSource>();
+    NavMeshBuildSource navMeshSource;
 
     private void Start()
     {
@@ -42,6 +47,7 @@ public class Level : MonoBehaviour
 
         perlinSeed = UnityEngine.Random.Range(minPerlinSeed, maxPerlinSeed);
 
+        collider = gameObject.GetComponent<BoxCollider>();
         navMeshDataInstance = new NavMeshDataInstance();
     }
 
@@ -65,7 +71,7 @@ public class Level : MonoBehaviour
                 if (tTile == null)  // 해당 위치에 타일이 존재하지 않으면
                 {
                     // 업데이트 리스트에 타일 추가
-                    GameObject tObject = UnityEngine.Object.Instantiate(TileObject, new Vector3(j, 0, i), TileObject.transform.rotation);
+                    GameObject tObject = UnityEngine.Object.Instantiate(TileObject, new Vector3(j, 0, i), TileObject.transform.rotation, transform);
                     tTile = new Tile(j, i, tObject);
 
                     float perlinValue = Mathf.PerlinNoise(tTile.tile.transform.position.x * 0.1f + perlinSeed, tTile.tile.transform.position.z * 0.1f + perlinSeed);
@@ -93,21 +99,11 @@ public class Level : MonoBehaviour
         }
     }
 
-    public void ParentAndActive(GameObject _parent)
-    {
-        foreach (var t in listToUpdate)
-        {
-            t.tile.transform.SetParent(_parent.transform);
-            t.tile.SetActive(true);
-            t.Updated = true;
-        }
-
-    }
-
     public void RenewList()
     {
         foreach (var t in listToUpdate)
         {
+            t.Updated = true;
             list.Add(t);
         }
         listToUpdate.Clear();
@@ -149,24 +145,27 @@ public class Level : MonoBehaviour
         }
     }
 
+    public void BuildNavMeshData()
+    {
+        navMeshSettings = GetComponent<NavMeshSurface>().GetBuildSettings();
+
+        navMeshSource = new NavMeshBuildSource()
+        {
+            transform = Matrix4x4.identity,
+            shape = NavMeshBuildSourceShape.Box,
+            size = new Vector3(1.0f,  1.0f, 1.0f)
+        };
+        navMeshSources.Add(navMeshSource);
+
+        navMeshData = NavMeshBuilder.BuildNavMeshData(navMeshSettings, navMeshSources, collider.bounds, Vector3.zero, Quaternion.identity);
+        navMeshDataInstance = NavMesh.AddNavMeshData(navMeshData);
+    }
+
     public void UpdateNavMeshData()
     {
         UpdateAABBCollider();
 
-        NavMesh.RemoveNavMeshData(navMeshDataInstance);
-
-        BoxCollider collider = GetComponent<BoxCollider>();
-
-        NavMeshBuildSettings settings = new NavMeshBuildSettings();
-
-        Matrix4x4 matrix = new Matrix4x4();
-
-        List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
-        NavMeshBuildSource source;
-
-        NavMeshData data = new NavMeshData();
-
-        settings = GetComponent<NavMeshSurface>().GetBuildSettings();
+        navMeshSources.Clear();
 
         foreach (var t in list)
         {
@@ -175,17 +174,17 @@ public class Level : MonoBehaviour
                 continue;
             }
 
-            source = new NavMeshBuildSource();
+            navMeshSource = new NavMeshBuildSource()
+            {
+                transform = t.tile.transform.localToWorldMatrix,
+                shape = NavMeshBuildSourceShape.Box,
+                size = t.tile.GetComponent<BoxCollider>().size
+            };
 
-            source.transform = t.tile.transform.localToWorldMatrix;
-            source.shape = NavMeshBuildSourceShape.Box;
-            source.size = t.tile.GetComponent<BoxCollider>().size;
-            sources.Add(source);
+            navMeshSources.Add(navMeshSource);
         }
 
-        data = NavMeshBuilder.BuildNavMeshData(settings, sources, collider.bounds, Vector3.zero, Quaternion.identity);
-        navMeshDataInstance = NavMesh.AddNavMeshData(data);
-
+        NavMeshBuilder.UpdateNavMeshData(navMeshData, navMeshSettings, navMeshSources, collider.bounds);
     }
 
 
@@ -272,7 +271,7 @@ public class Area
         maxY = _maxY;
     }
 
-    public Area (Vector3 _position, float _mapSize)
+    public Area(Vector3 _position, float _mapSize)
     {
         minX = _position.x - _mapSize;
         maxX = _position.x + _mapSize;
