@@ -13,19 +13,14 @@ using Enums;
 public class CharacterController : MonoBehaviour
 {
     // GameObjects
-    public GameObject player;
-    public GameObject moveCursor;
-    public GameObject targetCursor;
-    public GameObject projectileManager;
-
-    public LineRenderer lineRenderer;
-    const int lineSegments = 20;
-
-    public static Trace trace = new Trace();
+    [SerializeField] GameObject player;
+    [SerializeField] GameObject moveCursor;
+    [SerializeField] GameObject targetCursor;
+    [SerializeField] GameObject projectileManager;
 
     // Components
     Animator anim;
-    Projectiles projectiles;
+    ProjectilesManager projectiles;
 
     // Move 관련
     Vector3 playerDestination = Vector3.zero;
@@ -40,9 +35,7 @@ public class CharacterController : MonoBehaviour
     void Start()
     {
         anim = player.GetComponent<Animator>();
-        projectiles = projectileManager.GetComponent<Projectiles>();
-
-        lineRenderer = GameObject.Find("LineRenderer").GetComponent<LineRenderer>();
+        projectiles = projectileManager.GetComponent<ProjectilesManager>();
     }
 
     // Update is called once per frame
@@ -56,7 +49,6 @@ public class CharacterController : MonoBehaviour
         if (Input.GetMouseButtonDown(1))    // RMB
         {
             playerDestination = GetRaycastHitpoint();
-            playerDestination.y = 0.0f;
 
             if (mode == Status.Aiming)
             {
@@ -91,8 +83,10 @@ public class CharacterController : MonoBehaviour
         {
             case Status.Moving:
 
+                player.GetComponent<AudioSource>().mute = false;
+
                 // When player moved onto the point
-                if (Vector3.Distance(player.transform.position, playerDestination) < 0.05f)
+                if (Vector3.Distance(player.transform.position, playerDestination) < 0.1f)
                 {
                     Stop();
                 }
@@ -105,6 +99,7 @@ public class CharacterController : MonoBehaviour
 
             case Status.Stopped:
 
+                player.GetComponent<AudioSource>().mute = true;
                 break;
 
             case Status.Aiming:
@@ -128,24 +123,24 @@ public class CharacterController : MonoBehaviour
     {
         anim.SetBool("isRunning", true);
 
-        playerDestination.y = 0.55f;
-        targetDirection = playerDestination - player.transform.position;
-        
+        float tx = playerDestination.x - player.transform.position.x;
+        float tZ = playerDestination.z - player.transform.position.z;
+
+        targetDirection = new Vector3(tx, 0.0f, tZ);
+            
         moveCursor.transform.position = playerDestination;
         moveCursor.SetActive(true);
 
         player.transform.rotation = Quaternion.Slerp(player.transform.rotation, Quaternion.LookRotation(targetDirection), Time.deltaTime * 8.0f);
-        player.transform.position = Vector3.MoveTowards(player.transform.position, playerDestination, Time.deltaTime * 5.0f);
+        player.transform.position = Vector3.MoveTowards(player.transform.position, new Vector3(playerDestination.x, 0.5f, playerDestination.z), Time.deltaTime * 5.0f);
 
         SwitchMode(Status.Moving);
     }
 
     void QuitAim()
     {
-        // trace.Reset(); // 왜?
-
         targetCursor.SetActive(false);
-        lineRenderer.enabled = false;
+        projectiles.LineRenderer.enabled = false;
 
         SwitchMode(Status.Stopped);
     }
@@ -153,24 +148,21 @@ public class CharacterController : MonoBehaviour
     void Aim()
     {
         Vector3 targetPosition = GetRaycastHitpoint();
-        targetPosition.y = 0.55f;
-
         targetCursor.transform.position = targetPosition;
         targetCursor.SetActive(true);
 
+        targetPosition.y = 0.55f;
         player.transform.LookAt(targetPosition);
-
 
         // position to fire the projectile
         Vector3 firePosition = Vector3.MoveTowards(player.transform.position, targetCursor.transform.position, 0.5f);
-        firePosition.y += 1.5f;
+        //firePosition.y += 1.5f;
 
         if(attackMode == AttackMode.Cannon)
         {
-            // 미리보기
-            trace.setTrace(firePosition, targetPosition);
-            trace.calculate();
-            previewTrace(trace);
+            ProjectilesManager.trace.setTrace(firePosition, targetPosition);
+            ProjectilesManager.trace.calculate();
+            projectiles.previewTrace();
         }
 
 
@@ -188,17 +180,12 @@ public class CharacterController : MonoBehaviour
         projectiles.Instantiate(tFrom, tTo, _mode);
     }
 
-
-
-    ///
-    ///
-
     Vector3 GetRaycastHitpoint()
     {
         Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit h;
         Physics.Raycast(r, out h);
-
+        Debug.Log(h.point);
         return h.point;
     }
 
@@ -213,31 +200,4 @@ public class CharacterController : MonoBehaviour
         attackMode = modeChangeTo;
     }
 
-
-    // 궤적 미리보기
-    public void previewTrace(Trace _trace)
-    {
-        //if (Input.GetKey("q"))
-        //{
-        //    // 발사각 상승
-        //    Debug.Log("발사각 상승");
-        //}
-        //else if (Input.GetKey("e"))
-        //{
-        //    // 발사각 하강
-        //    Debug.Log("발사각 하강");
-        //}
-
-        lineRenderer.positionCount = lineSegments;
-
-        Vector3[] tPositions = new Vector3[lineSegments];
-
-        for (int i = 0; i < lineSegments; ++i)
-        {
-            tPositions[i] = _trace.from + trace.GetPositionByTime(i * 0.05f);
-        }
-
-        lineRenderer.SetPositions(tPositions);
-        lineRenderer.enabled = true;
-    }
 }

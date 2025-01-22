@@ -1,8 +1,8 @@
-using Enums;
+﻿using Enums;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.AI;
 using NavMeshSurface = Unity.AI.Navigation.NavMeshSurface;
 
 public class GameManager : MonoBehaviour
@@ -36,38 +36,54 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
     #endregion
+    [Header("Managers")]
+    [SerializeField] LevelManager levelManager;
+    [SerializeField] StageManager stageManager;
+
     [Header("Level")]
-    public LevelManager levelManager;
-    public Level level;
+    [SerializeField] Level level;
 
     [Header("Player & Enemy")]
     public GameObject player;
-    public GameObject enemy;
-    public List<GameObject> enemies;
+    [SerializeField] GameObject enemyObject;
 
-    public StageManager stageManager;
 
-    public int kills = 0;
+    // public properties
+    public List<GameObject> Enemies { get; set; }
+    public int Kills { get; set; } = 0;
+
+
+    // readonly
+    readonly float updateEnemyInterval = 1.0f;
+    readonly int maxEnemy = 5;
+
 
     // Start is called before the first frame updatez`
     void Start()
     {
+        //// 스테이지 관련
+        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+        stageManager.startStage();
 
-        // initialize enemy list
-        enemies = new List<GameObject>();
+
+        //// 레벨 관련
+        // build a navmesh
+        level.BuildNavMeshData();
 
         // designate level to level manager
         levelManager.SetLevel(level);
 
         // update level
         StartCoroutine(levelManager.UpdateLevel());
-        //StartCoroutine(levelManager.UpdateNavMeshData());
+
+
+        //// 적 관련
+        // initialize enemy list
+        Enemies = new List<GameObject>();
 
         // start to spawn enemies
-        StartCoroutine(SpawnEnemies());
+        StartCoroutine(UpdateEnemies());
 
-        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
-        stageManager.startStage();
     }
 
     // Update is called once per frame
@@ -76,74 +92,61 @@ public class GameManager : MonoBehaviour
 
     }
 
-    // repeatedly spawn enemies
-    IEnumerator SpawnEnemies()
+    void SpawnEnemy()
+    {
+        // 적 transform 정의
+        Quaternion rotation = Quaternion.Euler(new Vector3(0.0f, Random.Range(0.0f, 360.0f), 0.0f));
+        Vector3 position = new Vector3(
+            player.transform.position.x + Random.Range(1.0f, 5.0f),
+            1.5f,
+            player.transform.position.z + Random.Range(1.0f, 5.0f)
+            );
+
+        // 적 스폰 공간 제한
+        if (position.x > level.Area.maxX)
+        {
+            position.x = level.Area.maxX;
+        }
+        else if (position.x < level.Area.minX)
+        {
+            position.x = level.Area.minX;
+        }
+        if (position.z > level.Area.maxY)
+        {
+            position.z = level.Area.maxY;
+        }
+        else if (position.z < level.Area.minY)
+        {
+            position.z = level.Area.minY;
+        }
+
+        // 스폰
+        GameObject instance = Instantiate(enemyObject, position, rotation);
+        Enemies.Add(instance);
+    }
+
+
+    IEnumerator UpdateEnemies()
     {
         while (true)
         {
-            GameObject enemyInstance = null;
-
-            if (enemies.Count >= 0 && enemies.Count < 5)
+            while (Enemies.Count >= 0 && Enemies.Count < maxEnemy)
             {
-                // 적 스폰
-                Quaternion rotation = Quaternion.Euler(new Vector3(0.0f, Random.Range(0.0f, 360.0f), 0.0f));
-
-                Vector3 enemyPosition = new Vector3(
-                    player.transform.position.x + Random.Range(1.0f, 5.0f),
-                    2.5f,
-                    player.transform.position.z + Random.Range(1.0f, 5.0f));
-                enemyInstance = Instantiate(enemy, enemyPosition, rotation);
-
-                // set enemy
-                enemyInstance.SetActive(true);
-                enemyInstance.transform.GetChild(0).gameObject.SetActive(false);
-                enemies.Add(enemyInstance);
-
-                enemyInstance.GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
+                SpawnEnemy();
             }
 
-            yield return new WaitForSeconds(1.0f);
-
-            for (int i = 0; i < enemies.Count; i++)
+            foreach (var enemy in Enemies)
             {
-                // 맵 크기에 접근 가능해야 함.
-                Vector3 enemyPosition = enemies[i].transform.position;
-                Rect mapRect = levelManager.mapRect;
-                if (enemyPosition.x > mapRect.maxX)
-                {
-                    enemyPosition.x -= enemyPosition.x - mapRect.maxX;
-                }
-                else if (enemyPosition.x < mapRect.minX)
-                {
-                    enemyPosition.x += mapRect.maxX - enemyPosition.x;
-                }
-                else if (enemyPosition.y > mapRect.maxY)
-                {
-                    enemyPosition.y -= enemyPosition.y - mapRect.maxY;
-                }
-                else
-                {
-                    enemyPosition.y += mapRect.maxY - enemyPosition.y;
-                }
+                enemy.SetActive(true);
 
-                if (enemies[i].activeInHierarchy)
-                {
-                    // start to move
-                    enemies[i].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = true;
-                    // set navmesh agent destination
-                    enemies[i].GetComponent<UnityEngine.AI.NavMeshAgent>().SetDestination(Vector3Int.RoundToInt( player.transform.position));
-                    // activate  trail particle system
-                    enemies[i].transform.GetChild(0).gameObject.SetActive(true);
-                }
-                else
-                {
-                    enemies[i].GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = true;
+                enemy.GetComponent<NavMeshAgent>().enabled = true;
+                enemy.GetComponent<NavMeshAgent>().SetDestination(player.transform.position);
 
-                    Destroy(enemies[i], 0.01f);
-                    enemies.Remove(enemies[i]);
-                }
+                enemy.transform.GetChild(0).gameObject.SetActive(true);
             }
 
+            yield return new WaitForSeconds(updateEnemyInterval);
         }
+
     }
 }

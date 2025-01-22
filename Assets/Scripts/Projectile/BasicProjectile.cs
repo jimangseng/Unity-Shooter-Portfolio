@@ -10,12 +10,15 @@ public class BasicProjectile : ProjectileBase
 
     protected void Start()
     {
-        damage = 5;
+        Damange = 5;
 
         forceDirection = Vector3.Normalize(to - from);
 
         gameObject.SetActive(true);
-        GetComponent<Rigidbody>().AddForce(forceDirection * 10.0f, ForceMode.Impulse);
+        GetComponent<Rigidbody>().AddForce(forceDirection * 15.0f, ForceMode.Impulse);
+
+        GetComponent<AudioSource>().Play();
+
     }
 
     private void OnCollisionEnter(Collision collision)
