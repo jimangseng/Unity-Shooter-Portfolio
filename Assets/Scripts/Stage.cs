@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class Stage : MonoBehaviour
 {
-    public float remainingTime;
-    public float elapsedTime;
+    public float remainingTime { get; set; } = 10.0f;
+    public float elapsedTime { get; set; } = 0.0f;
 
     // Start is called before the first frame update
     void Start()
     {
-        remainingTime = 10.0f;
-        elapsedTime = 0.0f;
+
     }
 
     // Update is called once per frame

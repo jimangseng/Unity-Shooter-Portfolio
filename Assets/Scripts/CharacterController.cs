@@ -13,19 +13,14 @@ using Enums;
 public class CharacterController : MonoBehaviour
 {
     // GameObjects
-    public GameObject player;
-    public GameObject moveCursor;
-    public GameObject targetCursor;
-    public GameObject projectileManager;
-
-    public LineRenderer lineRenderer;
-    const int lineSegments = 20;
-
-    public static Trace trace = new Trace();
+    [SerializeField] GameObject player;
+    [SerializeField] GameObject moveCursor;
+    [SerializeField] GameObject targetCursor;
+    [SerializeField] GameObject projectileManager;
 
     // Components
     Animator anim;
-    Projectiles projectiles;
+    ProjectilesManager projectiles;
 
     // Move 관련
     Vector3 playerDestination = Vector3.zero;
@@ -40,9 +35,7 @@ public class CharacterController : MonoBehaviour
     void Start()
     {
         anim = player.GetComponent<Animator>();
-        projectiles = projectileManager.GetComponent<Projectiles>();
-
-        lineRenderer = GameObject.Find("LineRenderer").GetComponent<LineRenderer>();
+        projectiles = projectileManager.GetComponent<ProjectilesManager>();
     }
 
     // Update is called once per frame
@@ -147,7 +140,7 @@ public class CharacterController : MonoBehaviour
     void QuitAim()
     {
         targetCursor.SetActive(false);
-        lineRenderer.enabled = false;
+        projectiles.LineRenderer.enabled = false;
 
         SwitchMode(Status.Stopped);
     }
@@ -167,10 +160,9 @@ public class CharacterController : MonoBehaviour
 
         if(attackMode == AttackMode.Cannon)
         {
-            // 미리보기
-            trace.setTrace(firePosition, targetPosition);
-            trace.calculate();
-            previewTrace(trace);
+            ProjectilesManager.trace.setTrace(firePosition, targetPosition);
+            ProjectilesManager.trace.calculate();
+            projectiles.previewTrace();
         }
 
 
@@ -187,11 +179,6 @@ public class CharacterController : MonoBehaviour
 
         projectiles.Instantiate(tFrom, tTo, _mode);
     }
-
-
-
-    ///
-    ///
 
     Vector3 GetRaycastHitpoint()
     {
@@ -213,31 +200,4 @@ public class CharacterController : MonoBehaviour
         attackMode = modeChangeTo;
     }
 
-
-    // 궤적 미리보기
-    public void previewTrace(Trace _trace)
-    {
-        //if (Input.GetKey("q"))
-        //{
-        //    // 발사각 상승
-        //    Debug.Log("발사각 상승");
-        //}
-        //else if (Input.GetKey("e"))
-        //{
-        //    // 발사각 하강
-        //    Debug.Log("발사각 하강");
-        //}
-
-        lineRenderer.positionCount = lineSegments;
-
-        Vector3[] tPositions = new Vector3[lineSegments];
-
-        for (int i = 0; i < lineSegments; ++i)
-        {
-            tPositions[i] = _trace.from + trace.GetPositionByTime(i * 0.05f);
-        }
-
-        lineRenderer.SetPositions(tPositions);
-        lineRenderer.enabled = true;
-    }
 }

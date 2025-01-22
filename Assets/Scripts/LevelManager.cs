@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NavMeshBuilder = UnityEngine.AI.NavMeshBuilder;
@@ -19,31 +19,13 @@ public class LevelManager : MonoBehaviour
 {
     Level level;
 
-    /// Properties
-
-    TileList tiles = new TileList();
-
-    float range = 20.0f;
-    float updateTime = 0.5f;
-
-    public Rect playerRect;
-    public Rect mapRect;
-
-    float perlinSeed;
-
-    NavMeshDataInstance navMeshDataInstance;
+    readonly float updateLevelInterval = 1.0f;
 
     /// Methodes
 
     private void Start()
     {
-        // Rect 관련
-        playerRect = new Rect(-range, range, -range, range);
-        mapRect = new Rect(-range, range, -range, range);
-        
-        navMeshDataInstance = new NavMeshDataInstance();
 
-        perlinSeed = Random.Range(100.0f, 1000.0f); // 범위는 어떻게 정해야하나?
     }
 
     private void Update()
@@ -51,170 +33,43 @@ public class LevelManager : MonoBehaviour
         
     }
 
-    public void SetLevel(Level _level)
-    {
-        level = _level;
-    }
-
     public IEnumerator UpdateLevel()
     {
         while (true)
         {
-            // 영역들을 업데이트
-            UpdatePlayerRect(level.PlayerObject.transform.position);
-            UpdateMapRect();
+            // 영역 업데이트
+            level.UpdateArea();
 
-            // 타일 리스트 업데이트
-            AddToTileList();
+            // 업데이트 리스트에 타일 추가 및 범위를 벗어난 타일 제거
+            level.AddTileToUpdateList();
+            level.RemoveOutdatedTile();
 
-            // 타일이 mapRect 바깥에 있으면 리스트에서 제거
-            tiles.RemoveIf(t => t.x < mapRect.minX || t.x > mapRect.maxX || t.y < mapRect.minY || t.y > mapRect.maxY);
-
-            /// 매 업데이트마다 중복 적용되고 있다. 최적화 필요
-            // 머티리얼 적용
-            tiles.ApplyMaterials(level.LevelMaterials);
-
-            // 높이 추가
-            AddObstacle(tiles);
-
-            // AABB 콜라이더 업데이트
-            tiles.UpdateAABBCollider(level.gameObject);
-
-            UpdateNavMeshData();
-
-            // 부모 지정
-            tiles.SetParent(level.gameObject);
-
-            // 그리기
-            tiles.Show();
-
-            yield return new WaitForSeconds(updateTime);
-        }
-    }
-
-    public void AddObstacle(TileList _tiles)
-    {
-        List<Tile> list = _tiles.GetList();
-
-        foreach (var t in list)
-        {
-            int tIndex = Mathf.FloorToInt(t.perlinValue * (3.0f));
-
-            if (tIndex > 1 && !t.updated)
+            // 새로 만들어진 타일만을 별도의 리스트에 넣어 관리한다
+            // 매 루프마다 1600개의 타일을 셋팅할 필요가 없다
+            if (level.listToUpdate.Count > 0)
             {
-                Vector3 tPosition = new Vector3(0.0f, 1.0f, 0.0f);
-                Transform tTransform = t.tile.transform;
-                tTransform.Translate(tPosition);
+                //UnityEngine.Debug.Log(level.listToUpdate.Count);
 
-                t.tile.layer = LayerMask.NameToLayer("Obstacle");
+                // 장애물 추가
+                level.CreateObstacles();
 
-                t.updated = true;
-            }
-        }
-    }
+                // 머티리얼 적용
+                level.ApplyMaterials(level.LevelMaterials);
 
-    public void UpdateNavMeshData()
-    {
-        NavMesh.RemoveNavMeshData(navMeshDataInstance);
+                // 리스트를 업데이트한다
+                level.RenewList();
 
-        BoxCollider collider = level.GetComponent<BoxCollider>();
-
-        NavMeshBuildSettings settings = new NavMeshBuildSettings();
-
-        Matrix4x4 matrix = new Matrix4x4();
-
-        List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
-        NavMeshBuildSource source;
-
-        NavMeshData data = new NavMeshData();
-
-        settings = level.GetComponent<NavMeshSurface>().GetBuildSettings();
-
-        foreach (var t in tiles.GetList())
-        {
-            if (t.tile.layer != LayerMask.NameToLayer("Level"))
-            {
-                continue;
+                // NavMesh 데이터를 업데이트
+                // NavMesh는 장애물이 전부 생성된 이후에 만들어져야하므로 리스트 업데이트 이후에 와야 한다
+                level.UpdateNavMeshData();
             }
 
-            source = new NavMeshBuildSource();
-
-            source.transform = t.tile.transform.localToWorldMatrix;
-            source.shape = NavMeshBuildSourceShape.Box;
-            source.size = t.tile.GetComponent<BoxCollider>().size;
-            sources.Add(source);
+            yield return new WaitForSeconds(updateLevelInterval);
         }
-
-        data = NavMeshBuilder.BuildNavMeshData(settings, sources, collider.bounds, Vector3.zero, Quaternion.identity);
-        navMeshDataInstance = NavMesh.AddNavMeshData(data);
-
     }
 
-
-
-
-
-    /////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////
-
-    void UpdatePlayerRect(Vector3 _position)
+    public void SetLevel(Level _level)
     {
-        playerRect.minX = (_position.x) - range;
-        playerRect.maxX = (_position.x) + range;
-        playerRect.minY = (_position.z) - range;
-        playerRect.maxY = (_position.z) + range;
-    }
-
-    void UpdateMapRect()
-    {
-        // 우측으로 이동
-        if (playerRect.maxX > mapRect.maxX)
-        {
-            mapRect.minX = Mathf.Max(playerRect.minX, mapRect.minX);
-            mapRect.maxX = Mathf.Max(playerRect.maxX, mapRect.maxX);
-        }
-        // 좌측으로 이동
-        else if (playerRect.minX < mapRect.minX)
-        {
-            mapRect.minX = Mathf.Min(playerRect.minX, mapRect.minX);
-            mapRect.maxX = Mathf.Min(playerRect.maxX, mapRect.maxX);
-        }
-        // 상단으로 이동
-        if (playerRect.maxY > mapRect.maxY)
-        {
-            mapRect.minY = Mathf.Max(playerRect.minY, mapRect.minY);
-            mapRect.maxY = Mathf.Max(playerRect.maxY, mapRect.maxY);
-        }
-        // 하단으로 이동
-        else if (playerRect.minY < mapRect.minY)
-        {
-            mapRect.minY = Mathf.Min(playerRect.minY, mapRect.minY);
-            mapRect.maxY = Mathf.Min(playerRect.maxY, mapRect.maxY);
-        }
-
-        //Debug.Log(mapRect.minX + ", " + mapRect.maxX + ", " + mapRect.minY + ", " + mapRect.maxY);
-    }
-
-    void AddToTileList()
-    {
-        // player Rect을 순회
-        for (int i = Mathf.FloorToInt(playerRect.minY); i < Mathf.CeilToInt(playerRect.maxY); i++)
-        {
-            for (int j = Mathf.FloorToInt(playerRect.minX); j < Mathf.CeilToInt(playerRect.maxX); j++)
-            {
-                Tile tTile = tiles.GetTile(j, i);
-
-                if (tTile == null)
-                {
-                    GameObject tObject = Object.Instantiate(level.TileObject, new Vector3(j, 0, i), level.TileObject.transform.rotation);
-                    tTile = new Tile(j, i, tObject);
-
-                    float perlinValue = Mathf.PerlinNoise(tTile.tile.transform.position.x * 0.1f + perlinSeed, tTile.tile.transform.position.z * 0.1f + perlinSeed);
-                    tTile.perlinValue = Mathf.Clamp01(perlinValue);
-
-                    tiles.Add(tTile);
-                }
-            }
-        }
+        level = _level;
     }
 }
