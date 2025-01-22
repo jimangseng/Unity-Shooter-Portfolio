@@ -173,7 +173,7 @@ public class CharacterController : MonoBehaviour
     void Fire(AttackMode _mode)
     {
         Vector3 tFrom = player.transform.position;
-        tFrom.y += 1.5f;
+        tFrom.y += 1.0f;
 
         Vector3 tTo = targetCursor.transform.position;
 
@@ -185,7 +185,7 @@ public class CharacterController : MonoBehaviour
         Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit h;
         Physics.Raycast(r, out h);
-        Debug.Log(h.point);
+        //Debug.Log(h.point);
         return h.point;
     }
 
